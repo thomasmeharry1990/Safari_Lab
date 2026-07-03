@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#111111"/>
+  <g transform="translate(92,92) scale(5.125)">
+    <defs>
+      <clipPath id="sceneClip"><circle cx="32" cy="28" r="15.8"/></clipPath>
+    </defs>
+    <!-- compass ring -->
+    <circle cx="32" cy="32" r="30" fill="none" stroke="#D4A15A" stroke-width="2.4"/>
+    <!-- cardinal star points -->
+    <polygon points="32,1.5 34.4,9 32,12 29.6,9" fill="#D4A15A"/>
+    <polygon points="32,62.5 34.4,55 32,52 29.6,55" fill="#D4A15A"/>
+    <polygon points="62.5,32 55,34.4 52,32 55,29.6" fill="#D4A15A"/>
+    <polygon points="1.5,32 9,34.4 12,32 9,29.6" fill="#D4A15A"/>
+    <!-- scene disc -->
+    <circle cx="32" cy="28" r="16.5" fill="#111111" stroke="#8A845F" stroke-width="1.2"/>
+    <g clip-path="url(#sceneClip)">
+      <circle cx="32" cy="26" r="11" fill="#E6D6B8"/>
+      <polygon points="30,44 43,29 55,44" fill="#3c4130"/>
+      <polygon points="13,44 26,26 38,44" fill="#51563D"/>
+      <line x1="19" y1="40" x2="19" y2="27" stroke="#2b2f21" stroke-width="1.6" stroke-linecap="round"/>
+      <ellipse cx="19" cy="26" rx="7" ry="2.2" fill="#2b2f21"/>
+      <path d="M35 20c.9-1 1.8-1 2.6 0 .8-1 1.7-1 2.6 0" fill="none" stroke="#51563D" stroke-width="1" stroke-linecap="round"/>
+    </g>
+    <!-- barbell -->
+    <g stroke="#D4A15A" stroke-linecap="round">
+      <line x1="15" y1="49" x2="49" y2="49" stroke-width="2"/>
+      <line x1="22" y1="44" x2="22" y2="54" stroke-width="3"/>
+      <line x1="42" y1="44" x2="42" y2="54" stroke-width="3"/>
+      <line x1="18" y1="45.5" x2="18" y2="52.5" stroke-width="2.4"/>
+      <line x1="46" y1="45.5" x2="46" y2="52.5" stroke-width="2.4"/>
+    </g>
+  </g>
+</svg>

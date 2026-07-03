@@ -4,6 +4,7 @@ import { BRAND_COLORS } from '@/lib/constants/brand';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { LocalDataProvider } from '@/lib/state/LocalDataProvider';
+import { ServiceWorkerRegister } from '@/components/pwa/ServiceWorkerRegister';
 import './globals.css';
 
 /**
@@ -21,6 +22,15 @@ export const metadata: Metadata = {
   description: DOCTRINE_STATEMENT,
   applicationName: APP_DISPLAY_NAME,
   robots: { index: false, follow: false },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
+  appleWebApp: {
+    capable: true,
+    title: APP_DISPLAY_NAME,
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 export const viewport: Viewport = {
@@ -42,6 +52,7 @@ export default function RootLayout({
           {children}
           <Footer />
         </LocalDataProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
