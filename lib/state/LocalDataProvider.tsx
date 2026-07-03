@@ -15,19 +15,33 @@ import {
   useState,
 } from 'react';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
+import type { SessionLog } from '@/lib/models/session';
 import type { ActiveProgram, DraftProgram } from '@/lib/engine/types';
-import { toActiveProgram } from '@/lib/engine';
 import {
+  applySetLog,
+  buildSessionLog,
+  computePRs,
+  finalizeSession,
+  toActiveProgram,
+  type PRResult,
+  type WeightUnit,
+} from '@/lib/engine';
+import {
+  addSessionToHistory,
   clearActiveProgram,
+  clearActiveSession,
   clearAllData,
   DEFAULT_SETTINGS,
   deleteOverride,
   getActiveProgram,
+  getActiveSession,
   getAppMeta,
   getOverrides,
+  getSessionHistory,
   getSettings,
   putOverride,
   saveActiveProgram,
+  saveActiveSession,
   saveSettings,
   type AppMeta,
 } from '@/lib/db/repo';
@@ -38,6 +52,8 @@ interface LocalDataValue {
   overrides: ExerciseOverride[];
   appMeta: AppMeta | null;
   activeProgram: ActiveProgram | null;
+  activeSession: SessionLog | null;
+  sessionHistory: SessionLog[];
   blockedIds: string[];
   favouriteIds: string[];
   updateSettings: (patch: Partial<UserSettings>) => void;
@@ -46,6 +62,14 @@ interface LocalDataValue {
   toggleFavourite: (exerciseId: string) => void;
   lockProgram: (draft: DraftProgram) => ActiveProgram;
   endProgram: () => void;
+  startSession: (dayIndex: number) => void;
+  logSet: (
+    blockId: string,
+    setNumber: number,
+    input: { weight?: number; reps?: number; unit: WeightUnit }
+  ) => void;
+  finishSession: () => { session: SessionLog; prs: PRResult[] } | null;
+  abandonSession: () => void;
   clearAll: () => Promise<void>;
 }
 
@@ -61,22 +85,28 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const [overrides, setOverrides] = useState<ExerciseOverride[]>([]);
   const [appMeta, setAppMeta] = useState<AppMeta | null>(null);
   const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
+  const [activeSession, setActiveSession] = useState<SessionLog | null>(null);
+  const [sessionHistory, setSessionHistory] = useState<SessionLog[]>([]);
 
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const [s, o, m, p] = await Promise.all([
+        const [s, o, m, p, sess, hist] = await Promise.all([
           getSettings(),
           getOverrides(),
           getAppMeta(),
           getActiveProgram(),
+          getActiveSession(),
+          getSessionHistory(),
         ]);
         if (!active) return;
         setSettings(s);
         setOverrides(o);
         setAppMeta(m);
         setActiveProgram(p);
+        setActiveSession(sess);
+        setSessionHistory(hist);
       } catch {
         // IndexedDB unavailable (private mode, blocked) - stay on defaults.
       } finally {
@@ -139,7 +169,73 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
 
   const endProgram = useCallback(() => {
     void clearActiveProgram();
+    void clearActiveSession();
     setActiveProgram(null);
+    setActiveSession(null);
+  }, []);
+
+  const startSession = useCallback(
+    (dayIndex: number) => {
+      if (!activeProgram) return;
+      const session = buildSessionLog(activeProgram, dayIndex);
+      void saveActiveSession(session);
+      setActiveSession(session);
+    },
+    [activeProgram]
+  );
+
+  const logSet = useCallback(
+    (
+      blockId: string,
+      setNumber: number,
+      input: { weight?: number; reps?: number; unit: WeightUnit }
+    ) => {
+      setActiveSession((prev) => {
+        if (!prev) return prev;
+        const next = applySetLog(prev, blockId, setNumber, input);
+        void saveActiveSession(next);
+        return next;
+      });
+    },
+    []
+  );
+
+  const finishSession = useCallback((): {
+    session: SessionLog;
+    prs: PRResult[];
+  } | null => {
+    if (!activeSession) return null;
+    const finalized = finalizeSession(activeSession);
+    const prs = computePRs(finalized, sessionHistory);
+
+    void addSessionToHistory(finalized);
+    void clearActiveSession();
+    setSessionHistory((prev) => [...prev, finalized]);
+    setActiveSession(null);
+
+    // Advance the program to the next day / week.
+    if (activeProgram) {
+      const nextDay = (activeProgram.currentDayIndex + 1) % activeProgram.daysPerWeek;
+      const wrapped = nextDay === 0;
+      const nextWeek = Math.min(
+        activeProgram.weeks,
+        activeProgram.currentWeek + (wrapped ? 1 : 0)
+      );
+      const updated: ActiveProgram = {
+        ...activeProgram,
+        currentDayIndex: nextDay,
+        currentWeek: nextWeek,
+      };
+      void saveActiveProgram(updated);
+      setActiveProgram(updated);
+    }
+
+    return { session: finalized, prs };
+  }, [activeSession, sessionHistory, activeProgram]);
+
+  const abandonSession = useCallback(() => {
+    void clearActiveSession();
+    setActiveSession(null);
   }, []);
 
   const clearAll = useCallback(async () => {
@@ -147,6 +243,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setSettings(DEFAULT_SETTINGS);
     setOverrides([]);
     setActiveProgram(null);
+    setActiveSession(null);
+    setSessionHistory([]);
     setAppMeta(await getAppMeta());
   }, []);
 
@@ -166,6 +264,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       overrides,
       appMeta,
       activeProgram,
+      activeSession,
+      sessionHistory,
       blockedIds,
       favouriteIds,
       updateSettings,
@@ -174,6 +274,10 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       toggleFavourite,
       lockProgram,
       endProgram,
+      startSession,
+      logSet,
+      finishSession,
+      abandonSession,
       clearAll,
     }),
     [
@@ -182,6 +286,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       overrides,
       appMeta,
       activeProgram,
+      activeSession,
+      sessionHistory,
       blockedIds,
       favouriteIds,
       updateSettings,
@@ -190,6 +296,10 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       toggleFavourite,
       lockProgram,
       endProgram,
+      startSession,
+      logSet,
+      finishSession,
+      abandonSession,
       clearAll,
     ]
   );

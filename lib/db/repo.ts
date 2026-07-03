@@ -5,6 +5,7 @@
 import { DB_STORES, SLFIT_SCHEMA_VERSION } from '@/lib/constants/db';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { ActiveProgram } from '@/lib/engine/types';
+import type { SessionLog } from '@/lib/models/session';
 import {
   idbClearAll,
   idbDelete,
@@ -95,6 +96,36 @@ export async function saveActiveProgram(program: ActiveProgram): Promise<void> {
 
 export async function clearActiveProgram(): Promise<void> {
   await idbDelete(DB_STORES.activeProgram, SINGLETON);
+}
+
+// --- Active gym session (singleton) + completed session history (collection) ---
+
+interface StoredActiveSession {
+  id: typeof SINGLETON;
+  session: SessionLog;
+}
+
+export async function getActiveSession(): Promise<SessionLog | null> {
+  if (!isBrowserDbAvailable()) return null;
+  const stored = await idbGet<StoredActiveSession>(DB_STORES.activeSession, SINGLETON);
+  return stored?.session ?? null;
+}
+
+export async function saveActiveSession(session: SessionLog): Promise<void> {
+  await idbPut<StoredActiveSession>(DB_STORES.activeSession, { id: SINGLETON, session });
+}
+
+export async function clearActiveSession(): Promise<void> {
+  await idbDelete(DB_STORES.activeSession, SINGLETON);
+}
+
+export async function getSessionHistory(): Promise<SessionLog[]> {
+  if (!isBrowserDbAvailable()) return [];
+  return idbGetAll<SessionLog>(DB_STORES.sessionHistory);
+}
+
+export async function addSessionToHistory(session: SessionLog): Promise<void> {
+  await idbPut(DB_STORES.sessionHistory, session);
 }
 
 /** Wipe all local data (settings, overrides, programs, sessions, everything). */
