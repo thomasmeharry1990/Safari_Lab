@@ -11,6 +11,7 @@ import { SessionPlan } from '@/components/program/SessionPlan';
 import { Badge, Button, LinkButton, Section, Shell } from '@/components/ui';
 import { ExerciseLogger } from './ExerciseLogger';
 import { RestTimer } from './RestTimer';
+import { AdaptPanel } from './AdaptPanel';
 import styles from './gym.module.css';
 
 function fmtElapsed(ms: number): string {
@@ -38,6 +39,7 @@ export function GymMode() {
   const [completed, setCompleted] = useState<{ session: SessionLog; prs: PRResult[] } | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmAbandon, setConfirmAbandon] = useState(false);
+  const [showAdapt, setShowAdapt] = useState(false);
   const [now, setNow] = useState(0);
   const [online, setOnline] = useState(true);
 
@@ -268,10 +270,15 @@ export function GymMode() {
             <Button variant="primary" onClick={() => startSession(viewDay)}>
               Start this session
             </Button>
+            <Button variant="secondary" onClick={() => setShowAdapt((v) => !v)}>
+              {showAdapt ? 'Hide adapt' : 'Adapt session'}
+            </Button>
             <LinkButton href="/program" variant="ghost">
               Back to program
             </LinkButton>
           </div>
+
+          {showAdapt ? <AdaptPanel program={activeProgram} dayIndex={viewDay} /> : null}
         </Section>
       </Shell>
     </>

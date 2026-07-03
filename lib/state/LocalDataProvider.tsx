@@ -16,7 +16,7 @@ import {
 } from 'react';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { SessionLog } from '@/lib/models/session';
-import type { ActiveProgram, DraftProgram } from '@/lib/engine/types';
+import type { ActiveProgram, DraftProgram, DraftSession } from '@/lib/engine/types';
 import {
   applySetLog,
   buildSessionLog,
@@ -62,6 +62,7 @@ interface LocalDataValue {
   toggleFavourite: (exerciseId: string) => void;
   lockProgram: (draft: DraftProgram) => ActiveProgram;
   endProgram: () => void;
+  adaptSession: (dayIndex: number, session: DraftSession) => void;
   startSession: (dayIndex: number) => void;
   logSet: (
     blockId: string,
@@ -174,6 +175,16 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveSession(null);
   }, []);
 
+  const adaptSession = useCallback((dayIndex: number, session: DraftSession) => {
+    setActiveProgram((prev) => {
+      if (!prev) return prev;
+      const sessions = prev.sessions.map((s, i) => (i === dayIndex ? session : s));
+      const next = { ...prev, sessions };
+      void saveActiveProgram(next);
+      return next;
+    });
+  }, []);
+
   const startSession = useCallback(
     (dayIndex: number) => {
       if (!activeProgram) return;
@@ -274,6 +285,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       toggleFavourite,
       lockProgram,
       endProgram,
+      adaptSession,
       startSession,
       logSet,
       finishSession,
@@ -296,6 +308,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       toggleFavourite,
       lockProgram,
       endProgram,
+      adaptSession,
       startSession,
       logSet,
       finishSession,

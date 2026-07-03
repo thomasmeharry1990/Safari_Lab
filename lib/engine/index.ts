@@ -23,3 +23,12 @@ export {
   type ProgressionRec,
   type ProgressionAction,
 } from './progression';
+export {
+  adaptLowTime,
+  adaptSoreness,
+  adaptEquipment,
+  adaptMissed,
+  estimateSessionMinutes,
+  type AdaptReason,
+  type AdaptResult,
+} from './adapt';
