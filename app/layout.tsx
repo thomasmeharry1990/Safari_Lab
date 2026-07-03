@@ -3,6 +3,7 @@ import { APP_DISPLAY_NAME, DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
 import { BRAND_COLORS } from '@/lib/constants/brand';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { LocalDataProvider } from '@/lib/state/LocalDataProvider';
 import './globals.css';
 
 /**
@@ -36,9 +37,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header />
-        {children}
-        <Footer />
+        <LocalDataProvider>
+          <Header />
+          {children}
+          <Footer />
+        </LocalDataProvider>
       </body>
     </html>
   );

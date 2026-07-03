@@ -12,6 +12,7 @@ const TRAIN_LINKS: { href: string; label: string }[] = [
 const TRUST_LINKS: { href: string; label: string }[] = [
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms & disclaimer' },
+  { href: '/settings', label: 'Settings' },
   { href: '/about', label: 'About' },
 ];
 

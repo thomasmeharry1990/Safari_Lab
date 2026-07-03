@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import type { ExperienceLevel, MuscleGroup } from '@/lib/models/exercise';
 import type { TrainingGoal } from '@/lib/models/program';
 import { buildSwap, generateProgram } from '@/lib/engine';
+import { useLocalData } from '@/lib/state/LocalDataProvider';
 import type {
   AvoidFlag,
   DraftProgram,
@@ -77,7 +78,7 @@ export function GeneratorWizard() {
   const [avoid, setAvoid] = useState<AvoidFlag[]>([]);
   const [program, setProgram] = useState<DraftProgram | null>(null);
   const [activeInput, setActiveInput] = useState<GeneratorInput | null>(null);
-  const [blocked, setBlocked] = useState<string[]>([]);
+  const { blockedIds, favouriteIds, blockExercise, unblockExercise } = useLocalData();
   const resultRef = useRef<HTMLDivElement>(null);
 
   function togglePriority(m: MuscleGroup) {
@@ -117,7 +118,8 @@ export function GeneratorWizard() {
         priorityMuscles,
         equipment,
         avoid,
-        blocked,
+        blocked: blockedIds,
+        favourites: favouriteIds,
       },
       true
     );
@@ -125,15 +127,15 @@ export function GeneratorWizard() {
 
   function handleBlock(id: string) {
     if (!activeInput) return;
-    const next = blocked.includes(id) ? blocked : [...blocked, id];
-    setBlocked(next);
+    const next = blockedIds.includes(id) ? blockedIds : [...blockedIds, id];
+    blockExercise(id); // persists to IndexedDB
     run({ ...activeInput, blocked: next }, false);
   }
 
   function handleUnblock(id: string) {
     if (!activeInput) return;
-    const next = blocked.filter((x) => x !== id);
-    setBlocked(next);
+    const next = blockedIds.filter((x) => x !== id);
+    unblockExercise(id); // persists to IndexedDB
     run({ ...activeInput, blocked: next }, false);
   }
 
@@ -310,7 +312,7 @@ export function GeneratorWizard() {
           <DraftProgramView
             program={program}
             input={activeInput}
-            blocked={blocked}
+            blocked={blockedIds}
             onSwap={handleSwap}
             onBlock={handleBlock}
             onUnblock={handleUnblock}
