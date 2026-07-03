@@ -23,6 +23,12 @@ export type BrandColorKey = keyof typeof BRAND_COLORS;
 /** Brand energy line. NOT a supplement/product claim. */
 export const BRAND_TAGLINE = 'Built for the wild. Made for the strong.' as const;
 
+/** Locked brand motto from the supplied brand guide. Used in the logo lockup. */
+export const BRAND_MOTTO = 'Discover. Train. Evolve.' as const;
+
+/** Section lead used across the brand universe. */
+export const BRAND_EXPEDITION_LINE = 'Every workout is a new expedition.' as const;
+
 /**
  * Copy tokens - consistent expedition language across empty states and CTAs.
  * Bible Section 1.2 (copy tokens) + Section 14 (empty states & microcopy).

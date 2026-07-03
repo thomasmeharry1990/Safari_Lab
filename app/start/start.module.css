@@ -9,6 +9,17 @@
   justify-content: space-between;
   gap: var(--sl-space-3);
 }
+.routeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--sl-radius-md);
+  color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.1);
+  border: 1px solid var(--sl-border);
+}
 .routeTitle {
   font-size: var(--sl-fs-lg);
   color: var(--sl-cream);

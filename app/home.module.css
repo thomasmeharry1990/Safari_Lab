@@ -125,6 +125,19 @@
   margin-bottom: var(--sl-space-6);
 }
 
+.featureIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--sl-space-3);
+  border-radius: var(--sl-radius-md);
+  color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.1);
+  border: 1px solid var(--sl-border);
+}
+
 .featureTitle {
   font-size: var(--sl-fs-lg);
   color: var(--sl-cream);

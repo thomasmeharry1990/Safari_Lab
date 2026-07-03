@@ -3,34 +3,90 @@
   text-decoration: none;
   color: var(--sl-gold);
 }
-.link:hover {
-  color: var(--sl-gold-strong);
+.link:hover .wordmark {
+  color: var(--sl-cream);
 }
 
 .lockup {
   display: inline-flex;
   align-items: center;
-  gap: var(--sl-space-2);
+  gap: var(--sl-space-3);
 }
 
 .emblemWrap {
   display: inline-flex;
-  color: var(--sl-gold);
 }
 .emblem {
   display: block;
 }
 
+/* --- Emblem parts (tokens-driven; art colours live here, not in tokens.css) --- */
+.ring {
+  stroke: var(--sl-gold);
+  fill: none;
+}
+.point {
+  fill: var(--sl-gold);
+}
+.disc {
+  fill: var(--sl-black);
+  stroke: var(--sl-muted-gold);
+}
+.sun {
+  fill: var(--sl-cream);
+}
+/* Two mountain tones: front is brand olive, back is a darker shade of it. */
+.mtnFront {
+  fill: var(--sl-olive);
+}
+.mtnBack {
+  fill: #3c4130;
+}
+.tree {
+  stroke: #2b2f21;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.treeCanopy {
+  fill: #2b2f21;
+}
+.bird {
+  stroke: var(--sl-olive);
+  stroke-width: 1;
+  fill: none;
+  stroke-linecap: round;
+}
+.barbell line {
+  stroke: var(--sl-gold);
+  stroke-linecap: round;
+}
+
+/* --- Wordmark --- */
+.text {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .wordmark {
   font-family: var(--sl-font-display);
   font-weight: var(--sl-fw-extrabold);
   font-size: var(--sl-fs-lg);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   color: var(--sl-cream);
   text-transform: uppercase;
   line-height: 1;
+  transition: color var(--sl-motion-fast) var(--sl-ease);
 }
 .wordmarkThin {
   color: var(--sl-gold);
   font-weight: var(--sl-fw-semibold);
+}
+.motto {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sl-muted-gold);
+  line-height: 1;
 }

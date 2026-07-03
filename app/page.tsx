@@ -1,4 +1,14 @@
+import type { ComponentType } from 'react';
 import { Badge, Card, Grid, LinkButton, Pill, Section, Shell } from '@/components/ui';
+import {
+  IconBarbell,
+  IconCompass,
+  IconDumbbell,
+  IconProgress,
+  IconShield,
+  IconShuffle,
+  type IconProps,
+} from '@/components/brand/Icons';
 import { BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
 import styles from './home.module.css';
 
@@ -11,32 +21,39 @@ const TRUST = [
   'Offline after first load',
 ];
 
-const FEATURES: { title: string; body: string }[] = [
-  {
-    title: 'Adaptive program generator',
-    body: 'Build a 4–12 week plan from your goal, days, priority muscles and equipment. Deterministic and inspectable — no black box.',
-  },
-  {
-    title: 'Gym-mode logging',
-    body: 'A thumb-friendly set logger with last-time and best-ever chips, rest timer and plate calculator. Survives a refresh.',
-  },
-  {
-    title: 'Adapts to real life',
-    body: 'Missed a session, sore, short on time or stuck on equipment? Safari Lab replans and explains every change in plain English.',
-  },
-  {
-    title: 'Your data, your device',
-    body: 'Everything lives in your browser. Export a .slfit save file any time and import it on another device — you own it.',
-  },
-  {
-    title: 'Progress dashboard',
-    body: 'Personal records, volume, adherence and strength trends. A command centre for your training, not a spreadsheet.',
-  },
-  {
-    title: 'Exercise library',
-    body: 'Searchable, filterable movements with form cues and smart substitutions when the rack is taken.',
-  },
-];
+const FEATURES: { title: string; body: string; Icon: ComponentType<IconProps> }[] =
+  [
+    {
+      title: 'Adaptive program generator',
+      body: 'Build a 4–12 week plan from your goal, days, priority muscles and equipment. Deterministic and inspectable — no black box.',
+      Icon: IconCompass,
+    },
+    {
+      title: 'Gym-mode logging',
+      body: 'A thumb-friendly set logger with last-time and best-ever chips, rest timer and plate calculator. Survives a refresh.',
+      Icon: IconBarbell,
+    },
+    {
+      title: 'Adapts to real life',
+      body: 'Missed a session, sore, short on time or stuck on equipment? Safari Lab replans and explains every change in plain English.',
+      Icon: IconShuffle,
+    },
+    {
+      title: 'Your data, your device',
+      body: 'Everything lives in your browser. Export a .slfit save file any time and import it on another device — you own it.',
+      Icon: IconShield,
+    },
+    {
+      title: 'Progress dashboard',
+      body: 'Personal records, volume, adherence and strength trends. A command centre for your training, not a spreadsheet.',
+      Icon: IconProgress,
+    },
+    {
+      title: 'Exercise library',
+      body: 'Searchable, filterable movements with form cues and smart substitutions when the rack is taken.',
+      Icon: IconDumbbell,
+    },
+  ];
 
 const STEPS: { n: string; title: string; body: string }[] = [
   {
@@ -146,6 +163,9 @@ export default function HomePage() {
           <Grid cols={3}>
             {FEATURES.map((f) => (
               <Card key={f.title} interactive>
+                <span className={styles.featureIcon} aria-hidden="true">
+                  <f.Icon size={24} />
+                </span>
                 <h3 className={styles.featureTitle}>{f.title}</h3>
                 <p className={styles.featureBody}>{f.body}</p>
               </Card>

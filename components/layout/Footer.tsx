@@ -22,7 +22,7 @@ export function Footer() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.brandCol}>
-          <Logo />
+          <Logo showMotto />
           <p className={styles.tagline}>{BRAND_TAGLINE}</p>
           <p className={styles.promise}>
             Your workouts stay on your device. No account, no uploads, no

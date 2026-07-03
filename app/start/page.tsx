@@ -1,5 +1,12 @@
+import type { ComponentType } from 'react';
 import type { Metadata } from 'next';
 import { Badge, Button, Card, Grid, Section, Shell } from '@/components/ui';
+import {
+  IconCompass,
+  IconDownload,
+  IconShuffle,
+  type IconProps,
+} from '@/components/brand/Icons';
 import { PageIntro } from '@/components/layout/PageIntro';
 import styles from './start.module.css';
 
@@ -8,20 +15,24 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const ROUTES: { title: string; body: string }[] = [
-  {
-    title: 'Create a program',
-    body: 'Answer a few questions and generate an adaptive 4–12 week block around your goal, days and equipment.',
-  },
-  {
-    title: 'Quick Safari',
-    body: 'One-off session built for the time and equipment you have right now — no program required.',
-  },
-  {
-    title: 'Import a save file',
-    body: 'Already have a .slfit file? Bring your programs, history and progress onto this device.',
-  },
-];
+const ROUTES: { title: string; body: string; Icon: ComponentType<IconProps> }[] =
+  [
+    {
+      title: 'Create a program',
+      body: 'Answer a few questions and generate an adaptive 4–12 week block around your goal, days and equipment.',
+      Icon: IconCompass,
+    },
+    {
+      title: 'Quick Safari',
+      body: 'One-off session built for the time and equipment you have right now — no program required.',
+      Icon: IconShuffle,
+    },
+    {
+      title: 'Import a save file',
+      body: 'Already have a .slfit file? Bring your programs, history and progress onto this device.',
+      Icon: IconDownload,
+    },
+  ];
 
 export default function StartPage() {
   return (
@@ -37,9 +48,12 @@ export default function StartPage() {
             {ROUTES.map((r) => (
               <Card key={r.title} className={styles.routeCard}>
                 <div className={styles.routeHead}>
-                  <h2 className={styles.routeTitle}>{r.title}</h2>
+                  <span className={styles.routeIcon} aria-hidden="true">
+                    <r.Icon size={22} />
+                  </span>
                   <Badge tone="olive">Coming soon</Badge>
                 </div>
+                <h2 className={styles.routeTitle}>{r.title}</h2>
                 <p className={styles.routeBody}>{r.body}</p>
                 <Button variant="secondary" disabled aria-disabled="true">
                   Unlocks in an upcoming build stage
