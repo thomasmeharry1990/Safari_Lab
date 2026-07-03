@@ -1,122 +1,187 @@
-import type { Metadata } from 'next';
-import {
-  Badge,
-  Button,
-  ButtonGroup,
-  Card,
-  FieldRow,
-  Grid,
-  Panel,
-  Pill,
-  Section,
-  Shell,
-} from '@/components/ui';
-import { BRAND_COLORS, BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
-import { APP_DISPLAY_NAME } from '@/lib/constants/doctrine';
-import styles from './scaffold.module.css';
+import { Badge, Card, Grid, LinkButton, Pill, Section, Shell } from '@/components/ui';
+import { BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
+import styles from './home.module.css';
 
-/**
- * STAGE 0.5 SCAFFOLD PREVIEW - not the real homepage.
- * This page exists only to demonstrate brand tokens and layout primitives.
- * It is replaced by the real marketing homepage in Stage 1. noindex.
- */
-export const metadata: Metadata = {
-  title: 'Design Scaffold Preview',
-  robots: { index: false, follow: false },
-};
-
-const swatches: { key: keyof typeof BRAND_COLORS; label: string }[] = [
-  { key: 'black', label: '--sl-black' },
-  { key: 'surface', label: '--sl-surface' },
-  { key: 'olive', label: '--sl-olive' },
-  { key: 'mutedGold', label: '--sl-muted-gold' },
-  { key: 'gold', label: '--sl-gold' },
-  { key: 'copper', label: '--sl-copper' },
-  { key: 'cream', label: '--sl-cream' },
+const TRUST = [
+  'No account required',
+  'No workout uploads',
+  'Adaptive training blocks',
+  'Export your save file',
+  'Works on mobile',
+  'Offline after first load',
 ];
 
-export default function ScaffoldPreview() {
+const FEATURES: { title: string; body: string }[] = [
+  {
+    title: 'Adaptive program generator',
+    body: 'Build a 4–12 week plan from your goal, days, priority muscles and equipment. Deterministic and inspectable — no black box.',
+  },
+  {
+    title: 'Gym-mode logging',
+    body: 'A thumb-friendly set logger with last-time and best-ever chips, rest timer and plate calculator. Survives a refresh.',
+  },
+  {
+    title: 'Adapts to real life',
+    body: 'Missed a session, sore, short on time or stuck on equipment? Safari Lab replans and explains every change in plain English.',
+  },
+  {
+    title: 'Your data, your device',
+    body: 'Everything lives in your browser. Export a .slfit save file any time and import it on another device — you own it.',
+  },
+  {
+    title: 'Progress dashboard',
+    body: 'Personal records, volume, adherence and strength trends. A command centre for your training, not a spreadsheet.',
+  },
+  {
+    title: 'Exercise library',
+    body: 'Searchable, filterable movements with form cues and smart substitutions when the rack is taken.',
+  },
+];
+
+const STEPS: { n: string; title: string; body: string }[] = [
+  {
+    n: '01',
+    title: 'Set your goals',
+    body: 'Pick a goal, experience level, training days and the muscles you want to prioritise.',
+  },
+  {
+    n: '02',
+    title: 'Generate your plan',
+    body: 'Get a balanced multi-week block. Review it, swap exercises, then lock it in.',
+  },
+  {
+    n: '03',
+    title: 'Train and log',
+    body: 'Open Today’s Safari at the gym. Log sets one-handed with rest timers and PR alerts.',
+  },
+  {
+    n: '04',
+    title: 'Adapt and progress',
+    body: 'Safari Lab recommends next loads and reshapes the plan around missed or hard sessions.',
+  },
+];
+
+export default function HomePage() {
   return (
     <main>
+      {/* --- Hero --- */}
       <Shell>
-        <Section>
-          <Badge tone="olive">Stage 0.5 &middot; Design scaffold</Badge>
-          <h1 className={styles.title}>{APP_DISPLAY_NAME}</h1>
-          <p className={styles.tagline}>{BRAND_TAGLINE}</p>
-          <p className={styles.note}>
-            Internal preview of brand tokens and layout primitives. This is not
-            the homepage &mdash; the real <strong>{COPY.startCta}</strong>{' '}
-            funnel is built in Stage 1.
-          </p>
-          <ButtonGroup>
-            <Button variant="primary">{COPY.startCta}</Button>
-            <Button variant="secondary">{COPY.loadSaveFile}</Button>
-            <Button variant="ghost">{COPY.quickSafari}</Button>
-          </ButtonGroup>
+        <Section className={styles.hero}>
+          <div className={styles.heroCopy}>
+            <Badge tone="gold">Free &middot; No account &middot; Local-first</Badge>
+            <h1 className={styles.heroTitle}>
+              Discover your next workout.
+              <span className={styles.heroTitleAccent}> Start your Safari.</span>
+            </h1>
+            <p className={styles.heroSub}>
+              Create a free adaptive gym program that tracks your progress and
+              stays on your device. No sign-up, no uploads — just training.
+            </p>
+            <div className={styles.heroCtas}>
+              <LinkButton href="/start" variant="primary">
+                {COPY.startCta}
+              </LinkButton>
+              <LinkButton href="/start" variant="secondary">
+                {COPY.loadSaveFile}
+              </LinkButton>
+            </div>
+            <p className={styles.heroTagline}>{BRAND_TAGLINE}</p>
+          </div>
+
+          {/* Preview card - illustrative, not a real session */}
+          <div className={styles.heroPreview} aria-hidden="true">
+            <Card className={styles.previewCard}>
+              <div className={styles.previewHead}>
+                <span className={styles.previewLabel}>{COPY.todaysSafari}</span>
+                <Badge tone="olive">Week 2 &middot; Day 3</Badge>
+              </div>
+              <div className={styles.previewRow}>
+                <div>
+                  <p className={styles.previewEx}>Barbell Hip Thrust</p>
+                  <span className={styles.previewMeta}>4 sets &middot; 6–12 reps</span>
+                </div>
+                <Pill>100 kg</Pill>
+              </div>
+              <div className={styles.previewRow}>
+                <div>
+                  <p className={styles.previewEx}>Romanian Deadlift</p>
+                  <span className={styles.previewMeta}>3 sets &middot; 8–12 reps</span>
+                </div>
+                <Pill>70 kg</Pill>
+              </div>
+              <div className={styles.previewRow}>
+                <div>
+                  <p className={styles.previewEx}>Seated Cable Row</p>
+                  <span className={styles.previewMeta}>3 sets &middot; 10–15 reps</span>
+                </div>
+                <Pill>55 kg</Pill>
+              </div>
+              <div className={styles.previewFooter}>
+                <Badge tone="gold">PR</Badge>
+                <span className={styles.previewMeta}>Rest 2:00 &middot; last time 95 kg</span>
+              </div>
+            </Card>
+          </div>
         </Section>
 
-        <Section tight>
-          <h2>Brand colours</h2>
-          <Grid cols={7}>
-            {swatches.map((s) => (
-              <div key={s.key} className={styles.swatch}>
-                <span
-                  className={styles.swatchChip}
-                  style={{ backgroundColor: BRAND_COLORS[s.key] }}
-                  aria-hidden
-                />
-                <code className={styles.swatchLabel}>{s.label}</code>
+        {/* --- Trust strip --- */}
+        <ul className={styles.trust}>
+          {TRUST.map((t) => (
+            <li key={t} className={styles.trustItem}>
+              <span className={styles.trustTick} aria-hidden="true">
+                ✓
+              </span>
+              {t}
+            </li>
+          ))}
+        </ul>
+
+        {/* --- Features --- */}
+        <Section id="features">
+          <h2 className={styles.sectionTitle}>A complete training system</h2>
+          <p className={styles.sectionLede}>
+            Everything you need to plan, train and progress — running entirely in
+            your browser.
+          </p>
+          <Grid cols={3}>
+            {FEATURES.map((f) => (
+              <Card key={f.title} interactive>
+                <h3 className={styles.featureTitle}>{f.title}</h3>
+                <p className={styles.featureBody}>{f.body}</p>
+              </Card>
+            ))}
+          </Grid>
+        </Section>
+
+        {/* --- How it works --- */}
+        <Section id="how-it-works" tight>
+          <h2 className={styles.sectionTitle}>How it works</h2>
+          <Grid cols={4}>
+            {STEPS.map((s) => (
+              <div key={s.n} className={styles.step}>
+                <span className={styles.stepNum}>{s.n}</span>
+                <h3 className={styles.stepTitle}>{s.title}</h3>
+                <p className={styles.featureBody}>{s.body}</p>
               </div>
             ))}
           </Grid>
         </Section>
 
-        <Section tight>
-          <h2>Primitives</h2>
-          <Grid cols={3}>
-            <Card interactive>
-              <h3>Card</h3>
-              <p>
-                Textured dark surface with a gold border. Hover lifts it. Used
-                for feature cards, program cards and library results.
+        {/* --- Quick Safari band --- */}
+        <Section>
+          <Card className={styles.band}>
+            <div>
+              <h2 className={styles.bandTitle}>Not ready for a full program?</h2>
+              <p className={styles.bandBody}>
+                Start a {COPY.quickSafari} — a one-off session built around your
+                time, equipment and target muscles. Convert it to a program any
+                time.
               </p>
-              <ButtonGroup>
-                <Pill>chest</Pill>
-                <Pill>glutes</Pill>
-                <Badge tone="gold">Priority</Badge>
-              </ButtonGroup>
-            </Card>
-
-            <Panel>
-              <h3>Panel</h3>
-              <p>Quieter grouped surface for settings and sub-sections.</p>
-              <FieldRow
-                label="Workout duration"
-                hint="Controls exercise count and rest."
-                htmlFor="demo-duration"
-              >
-                <select id="demo-duration" defaultValue="60">
-                  <option value="30">30 minutes</option>
-                  <option value="45">45 minutes</option>
-                  <option value="60">60 minutes</option>
-                  <option value="75">75+ minutes</option>
-                </select>
-              </FieldRow>
-            </Panel>
-
-            <Card>
-              <h3>Status & tone</h3>
-              <ButtonGroup>
-                <Badge tone="gold">PR</Badge>
-                <Badge tone="olive">Logged</Badge>
-                <Badge tone="copper">Deload</Badge>
-              </ButtonGroup>
-              <p className={styles.spaced}>
-                Copper carries warnings and intensity; gold carries wins and
-                active state.
-              </p>
-            </Card>
-          </Grid>
+            </div>
+            <LinkButton href="/start" variant="primary">
+              {COPY.quickSafari}
+            </LinkButton>
+          </Card>
         </Section>
       </Shell>
     </main>

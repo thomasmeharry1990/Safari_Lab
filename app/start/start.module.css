@@ -1,0 +1,32 @@
+.routeCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sl-space-3);
+}
+.routeHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+}
+.routeTitle {
+  font-size: var(--sl-fs-lg);
+  color: var(--sl-cream);
+  margin: 0;
+}
+.routeBody {
+  flex: 1;
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-muted);
+  margin: 0;
+}
+.routeCard button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.note {
+  margin-top: var(--sl-space-6);
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-faint);
+  max-width: 46rem;
+}

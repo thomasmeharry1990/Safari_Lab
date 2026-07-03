@@ -1,0 +1,14 @@
+.intro {
+  padding-top: var(--sl-space-8);
+  padding-bottom: var(--sl-space-4);
+}
+.title {
+  margin-top: var(--sl-space-3);
+  margin-bottom: var(--sl-space-3);
+}
+.lede {
+  max-width: 44rem;
+  font-size: var(--sl-fs-lg);
+  color: var(--sl-fg-muted);
+  margin: 0;
+}

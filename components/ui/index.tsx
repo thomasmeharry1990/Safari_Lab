@@ -6,9 +6,11 @@
 import type {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
+  ComponentProps,
   HTMLAttributes,
   ReactNode,
 } from 'react';
+import Link from 'next/link';
 import styles from './primitives.module.css';
 
 function cx(...parts: (string | false | undefined)[]): string {
@@ -134,6 +136,20 @@ export function ButtonLink({
     <a className={cx(styles.btn, variantClass[variant], className)} {...rest}>
       {children}
     </a>
+  );
+}
+
+/** Internal navigation styled as a button (client-side routing via next/link). */
+export function LinkButton({
+  variant = 'primary',
+  className,
+  children,
+  ...rest
+}: ComponentProps<typeof Link> & { variant?: ButtonVariant }) {
+  return (
+    <Link className={cx(styles.btn, variantClass[variant], className)} {...rest}>
+      {children}
+    </Link>
   );
 }
 

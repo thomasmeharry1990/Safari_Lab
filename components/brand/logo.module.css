@@ -1,0 +1,36 @@
+.link {
+  display: inline-flex;
+  text-decoration: none;
+  color: var(--sl-gold);
+}
+.link:hover {
+  color: var(--sl-gold-strong);
+}
+
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sl-space-2);
+}
+
+.emblemWrap {
+  display: inline-flex;
+  color: var(--sl-gold);
+}
+.emblem {
+  display: block;
+}
+
+.wordmark {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-lg);
+  letter-spacing: 0.04em;
+  color: var(--sl-cream);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.wordmarkThin {
+  color: var(--sl-gold);
+  font-weight: var(--sl-fw-semibold);
+}

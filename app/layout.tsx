@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { APP_DISPLAY_NAME, DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
 import { BRAND_COLORS } from '@/lib/constants/brand';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import './globals.css';
 
 /**
@@ -33,7 +35,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
