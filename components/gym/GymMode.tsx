@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
-import { lastAndBest, type PRResult, type WeightUnit } from '@/lib/engine';
+import { lastAndBest, recommendNext, type PRResult, type WeightUnit } from '@/lib/engine';
 import type { SessionLog } from '@/lib/models/session';
 import { getExerciseById } from '@/lib/data/exercises';
 import { PageIntro } from '@/components/layout/PageIntro';
@@ -154,19 +154,27 @@ export function GymMode() {
 
         <Shell>
           <Section tight>
-            {activeSession.exerciseBlocks.map((block) => (
-              <ExerciseLogger
-                key={block.id}
-                block={block}
-                unit={unit}
-                stat={lastAndBest(sessionHistory, block.currentExerciseId)}
-                logged={loggedByBlock.get(block.id) ?? new Map()}
-                onLog={(setNumber, weight, reps) => {
-                  logSet(block.id, setNumber, { weight, reps, unit });
-                  setRest({ timerId: Date.now(), seconds: block.targetRestSeconds });
-                }}
-              />
-            ))}
+            {activeSession.exerciseBlocks.map((block) => {
+              const ex = getExerciseById(block.currentExerciseId);
+              return (
+                <ExerciseLogger
+                  key={block.id}
+                  block={block}
+                  unit={unit}
+                  stat={lastAndBest(sessionHistory, block.currentExerciseId)}
+                  rec={
+                    ex
+                      ? recommendNext(ex, block.targetRepRange, sessionHistory, unit)
+                      : undefined
+                  }
+                  logged={loggedByBlock.get(block.id) ?? new Map()}
+                  onLog={(setNumber, weight, reps) => {
+                    logSet(block.id, setNumber, { weight, reps, unit });
+                    setRest({ timerId: Date.now(), seconds: block.targetRestSeconds });
+                  }}
+                />
+              );
+            })}
 
             <div className={styles.finishRow}>
               {confirmFinish ? (

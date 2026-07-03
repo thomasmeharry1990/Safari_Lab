@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { SessionExerciseBlock } from '@/lib/models/session';
-import type { ExerciseHistoryStat, WeightUnit } from '@/lib/engine';
+import type { ExerciseHistoryStat, ProgressionRec, WeightUnit } from '@/lib/engine';
 import { getExerciseById } from '@/lib/data/exercises';
 import { PlateCalc } from './PlateCalc';
 import styles from './gym.module.css';
@@ -17,12 +17,14 @@ export function ExerciseLogger({
   block,
   unit,
   stat,
+  rec,
   logged,
   onLog,
 }: {
   block: SessionExerciseBlock;
   unit: WeightUnit;
   stat: ExerciseHistoryStat;
+  rec?: ProgressionRec;
   logged: Map<number, LoggedSet>;
   onLog: (setNumber: number, weight: number | undefined, reps: number | undefined) => void;
 }) {
@@ -30,9 +32,18 @@ export function ExerciseLogger({
   const isCardio = ex?.primaryMuscle === 'cardio';
   const showPlateToggle = !!ex?.plateCalculator;
 
-  const prefillWeight = stat.last?.weight != null ? String(stat.last.weight) : '';
+  const prefillWeight =
+    rec?.suggestedWeight != null
+      ? String(rec.suggestedWeight)
+      : stat.last?.weight != null
+        ? String(stat.last.weight)
+        : '';
   const prefillReps =
-    stat.last?.reps != null ? String(stat.last.reps) : String(block.targetRepRange[1]);
+    rec?.suggestedReps != null
+      ? String(rec.suggestedReps)
+      : stat.last?.reps != null
+        ? String(stat.last.reps)
+        : String(block.targetRepRange[1]);
 
   const [inputs, setInputs] = useState<{ weight: string; reps: string }[]>(() =>
     Array.from({ length: block.targetSets }, (_, i) => {
@@ -74,6 +85,14 @@ export function ExerciseLogger({
       </div>
 
       <div className={styles.chips}>
+        {rec && rec.action !== 'start' ? (
+          <span className={styles.chipRec} title={rec.rationale}>
+            Next:{' '}
+            {rec.suggestedWeight != null
+              ? `${rec.suggestedWeight}${unit} × ${rec.suggestedReps}`
+              : `${rec.suggestedReps} ${isCardio ? 'min' : 'reps'}`}
+          </span>
+        ) : null}
         {stat.last ? (
           <span className={styles.chip}>
             Last {stat.last.weight}{unit} × {stat.last.reps}

@@ -17,3 +17,9 @@ export {
   type ExerciseHistoryStat,
   type PRResult,
 } from './session';
+export {
+  recommendNext,
+  loadIncrement,
+  type ProgressionRec,
+  type ProgressionAction,
+} from './progression';
