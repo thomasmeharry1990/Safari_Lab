@@ -1,0 +1,32 @@
+.panel {
+  padding: var(--sl-space-5);
+  margin-bottom: var(--sl-space-5);
+}
+.h2 {
+  font-size: var(--sl-fs-lg);
+  color: var(--sl-cream);
+  margin: 0 0 var(--sl-space-3);
+}
+.info {
+  max-width: 46rem;
+}
+.info h2 {
+  margin-top: var(--sl-space-6);
+}
+.info ul {
+  margin: 0 0 var(--sl-space-4);
+  padding-left: var(--sl-space-5);
+  color: var(--sl-fg-muted);
+}
+.info li {
+  margin-bottom: var(--sl-space-2);
+}
+.info p {
+  color: var(--sl-fg-muted);
+}
+.info code {
+  color: var(--sl-gold);
+}
+.info strong {
+  color: var(--sl-cream);
+}

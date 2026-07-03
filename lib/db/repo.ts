@@ -8,6 +8,7 @@ import type { ActiveProgram } from '@/lib/engine/types';
 import type { SessionLog } from '@/lib/models/session';
 import {
   idbClearAll,
+  idbClearStore,
   idbDelete,
   idbGet,
   idbGetAll,
@@ -75,6 +76,12 @@ export async function deleteOverride(exerciseId: string): Promise<void> {
   await idbDelete(DB_STORES.exerciseOverrides, exerciseId);
 }
 
+/** Replace the whole overrides store (used on import). */
+export async function replaceOverrides(list: ExerciseOverride[]): Promise<void> {
+  await idbClearStore(DB_STORES.exerciseOverrides);
+  await Promise.all(list.map((o) => idbPut(DB_STORES.exerciseOverrides, o)));
+}
+
 interface StoredActiveProgram extends ActiveProgram {
   id: typeof SINGLETON;
 }
@@ -126,6 +133,12 @@ export async function getSessionHistory(): Promise<SessionLog[]> {
 
 export async function addSessionToHistory(session: SessionLog): Promise<void> {
   await idbPut(DB_STORES.sessionHistory, session);
+}
+
+/** Replace the whole session-history store (used on import). */
+export async function replaceHistory(list: SessionLog[]): Promise<void> {
+  await idbClearStore(DB_STORES.sessionHistory);
+  await Promise.all(list.map((s) => idbPut(DB_STORES.sessionHistory, s)));
 }
 
 /** Wipe all local data (settings, overrides, programs, sessions, everything). */

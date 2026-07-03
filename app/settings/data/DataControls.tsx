@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
+import { BackupControls } from '@/components/data/BackupControls';
 import { Button, Panel } from '@/components/ui';
 import styles from './data.module.css';
 
@@ -52,18 +53,10 @@ export function DataControls() {
       <Panel className={styles.panel}>
         <h2 className={styles.h2}>Save files</h2>
         <p className={styles.note}>
-          Exporting and importing <code>.slfit</code> save files arrives in an
-          upcoming build stage. Your data already persists on this device between
-          visits.
+          Export a <code>.slfit</code> backup you own, or import one to restore
+          your programs, history and settings on any device.
         </p>
-        <div className={styles.actions}>
-          <Button variant="secondary" disabled aria-disabled="true">
-            Export save file
-          </Button>
-          <Button variant="secondary" disabled aria-disabled="true">
-            Import save file
-          </Button>
-        </div>
+        <BackupControls />
       </Panel>
 
       <Panel className={styles.danger}>

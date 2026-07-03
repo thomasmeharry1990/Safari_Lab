@@ -40,11 +40,14 @@ import {
   getSessionHistory,
   getSettings,
   putOverride,
+  replaceHistory,
+  replaceOverrides,
   saveActiveProgram,
   saveActiveSession,
   saveSettings,
   type AppMeta,
 } from '@/lib/db/repo';
+import type { SlFitSaveFile } from '@/lib/db/savefile';
 
 interface LocalDataValue {
   hydrated: boolean;
@@ -71,6 +74,8 @@ interface LocalDataValue {
   ) => void;
   finishSession: () => { session: SessionLog; prs: PRResult[] } | null;
   abandonSession: () => void;
+  exportSaveFile: () => SlFitSaveFile;
+  importSaveFile: (file: SlFitSaveFile) => Promise<void>;
   clearAll: () => Promise<void>;
 }
 
@@ -249,6 +254,38 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveSession(null);
   }, []);
 
+  const exportSaveFile = useCallback((): SlFitSaveFile => {
+    return {
+      app: 'SafariLab',
+      schemaVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      exportId: crypto.randomUUID(),
+      localDeviceId: appMeta?.deviceId ?? '',
+      settings,
+      exerciseOverrides: overrides,
+      activeProgram,
+      activeSession,
+      sessionHistory,
+      migrationHistory: [],
+    };
+  }, [appMeta, settings, overrides, activeProgram, activeSession, sessionHistory]);
+
+  const importSaveFile = useCallback(async (file: SlFitSaveFile) => {
+    await saveSettings(file.settings);
+    await replaceOverrides(file.exerciseOverrides);
+    await replaceHistory(file.sessionHistory);
+    if (file.activeProgram) await saveActiveProgram(file.activeProgram);
+    else await clearActiveProgram();
+    if (file.activeSession) await saveActiveSession(file.activeSession);
+    else await clearActiveSession();
+
+    setSettings(file.settings);
+    setOverrides(file.exerciseOverrides);
+    setSessionHistory(file.sessionHistory);
+    setActiveProgram(file.activeProgram);
+    setActiveSession(file.activeSession);
+  }, []);
+
   const clearAll = useCallback(async () => {
     await clearAllData();
     setSettings(DEFAULT_SETTINGS);
@@ -290,6 +327,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logSet,
       finishSession,
       abandonSession,
+      exportSaveFile,
+      importSaveFile,
       clearAll,
     }),
     [
@@ -313,6 +352,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logSet,
       finishSession,
       abandonSession,
+      exportSaveFile,
+      importSaveFile,
       clearAll,
     ]
   );
