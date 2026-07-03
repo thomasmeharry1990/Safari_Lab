@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "safari-lab",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "C:\\Users\\61433\\Desktop\\Safari Lab\\Claude Access",
+      "port": 3300
+    }
+  ]
+}

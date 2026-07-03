@@ -1,0 +1,162 @@
+/* Safari Lab - shared styling for layout & UI primitives (Bible 1.2). */
+
+/* --- Shell: page width container --- */
+.shell {
+  width: 100%;
+  max-width: var(--sl-shell-max);
+  margin-inline: auto;
+  padding-inline: var(--sl-space-4);
+}
+
+/* --- Section: vertical rhythm block --- */
+.section {
+  padding-block: var(--sl-space-8);
+}
+.sectionTight {
+  padding-block: var(--sl-space-6);
+}
+
+/* --- Grid --- */
+.grid {
+  display: grid;
+  gap: var(--sl-space-5);
+  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+}
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- Card --- */
+.card {
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-lg);
+  padding: var(--sl-space-5);
+  box-shadow: var(--sl-shadow-card);
+}
+.cardInteractive {
+  transition: transform var(--sl-motion-base) var(--sl-ease),
+    border-color var(--sl-motion-base) var(--sl-ease);
+}
+.cardInteractive:hover {
+  transform: translateY(-2px);
+  border-color: var(--sl-gold);
+}
+
+/* --- Panel: quieter grouped surface --- */
+.panel {
+  background-color: var(--sl-surface-2);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  padding: var(--sl-space-4);
+}
+
+/* --- Button --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sl-space-2);
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  font-size: var(--sl-fs-base);
+  letter-spacing: 0.02em;
+  min-height: var(--sl-tap-min);
+  padding: var(--sl-space-3) var(--sl-space-5);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--sl-motion-fast) var(--sl-ease),
+    border-color var(--sl-motion-fast) var(--sl-ease),
+    transform var(--sl-motion-fast) var(--sl-ease);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btnPrimary {
+  background-color: var(--sl-gold);
+  color: var(--sl-on-gold);
+  box-shadow: var(--sl-shadow-gold);
+}
+.btnPrimary:hover {
+  background-color: var(--sl-gold-strong);
+}
+.btnSecondary {
+  background-color: transparent;
+  color: var(--sl-cream);
+  border-color: var(--sl-border);
+}
+.btnSecondary:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+}
+.btnGhost {
+  background-color: transparent;
+  color: var(--sl-fg-muted);
+}
+.btnGhost:hover {
+  color: var(--sl-cream);
+}
+
+/* --- Button group --- */
+.btnGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-3);
+}
+
+/* --- Pill --- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sl-space-1);
+  padding: var(--sl-space-1) var(--sl-space-3);
+  border-radius: var(--sl-radius-pill);
+  background-color: rgba(81, 86, 61, 0.35);
+  border: 1px solid var(--sl-border);
+  color: var(--sl-cream);
+  font-size: var(--sl-fs-sm);
+}
+
+/* --- Badge --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--sl-space-2);
+  border-radius: var(--sl-radius-sm);
+  font-size: var(--sl-fs-xs);
+  font-weight: var(--sl-fw-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badgeGold {
+  background-color: rgba(212, 161, 90, 0.18);
+  color: var(--sl-gold);
+}
+.badgeOlive {
+  background-color: rgba(81, 86, 61, 0.4);
+  color: var(--sl-cream);
+}
+.badgeCopper {
+  background-color: rgba(183, 107, 46, 0.2);
+  color: var(--sl-copper);
+}
+
+/* --- Field row --- */
+.fieldRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sl-space-2);
+  margin-bottom: var(--sl-space-4);
+}
+.fieldLabel {
+  font-size: var(--sl-fs-sm);
+  font-weight: var(--sl-fw-medium);
+  color: var(--sl-cream);
+}
+.fieldHint {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+}

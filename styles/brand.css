@@ -1,0 +1,121 @@
+/*
+ * Safari Lab - Global brand surfaces and base element styling (v1.2 Bible 1.2).
+ * Generator, gym mode and library share this component language.
+ * Component-specific styling lives in CSS modules; this is the shared base.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--sl-bg);
+  color: var(--sl-fg);
+  font-family: var(--sl-font-body);
+  font-size: var(--sl-fs-base);
+  font-weight: var(--sl-fw-regular);
+  line-height: var(--sl-lh-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle premium depth: gold vignette over black, no external asset. */
+body {
+  background-image: radial-gradient(
+      1200px 600px at 80% -10%,
+      rgba(212, 161, 90, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at -10% 10%,
+      rgba(81, 86, 61, 0.14),
+      transparent 55%
+    );
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  line-height: var(--sl-lh-tight);
+  letter-spacing: 0.01em;
+  margin: 0 0 var(--sl-space-4);
+}
+
+h1 {
+  font-size: var(--sl-fs-4xl);
+}
+h2 {
+  font-size: var(--sl-fs-2xl);
+}
+h3 {
+  font-size: var(--sl-fs-xl);
+  color: var(--sl-cream);
+}
+
+p {
+  margin: 0 0 var(--sl-space-4);
+  color: var(--sl-fg-muted);
+}
+
+a {
+  color: var(--sl-gold);
+  text-decoration: none;
+  transition: color var(--sl-motion-fast) var(--sl-ease);
+}
+a:hover {
+  color: var(--sl-gold-strong);
+}
+
+/* Accessible focus ring across all interactive elements. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--sl-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--sl-radius-sm);
+}
+
+/* Form fields - shared look for generator/gym mode/library. */
+input,
+select,
+textarea {
+  font-family: var(--sl-font-body);
+  font-size: var(--sl-fs-base);
+  color: var(--sl-fg);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  padding: var(--sl-space-3) var(--sl-space-4);
+  min-height: var(--sl-tap-min);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--sl-fg-faint);
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--sl-border);
+  margin: var(--sl-space-6) 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background: var(--sl-gold);
+  color: var(--sl-on-gold);
+}
