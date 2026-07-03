@@ -1,0 +1,33 @@
+/* Reserved, non-intrusive ad space. Fixed min-height => no layout shift. */
+.banner,
+.rectangle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: var(--sl-space-6) 0;
+  border: 1px dashed var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  background-color: var(--sl-surface);
+}
+.banner {
+  min-height: 90px;
+}
+.rectangle {
+  min-height: 250px;
+  max-width: 336px;
+  margin-inline: auto;
+}
+.label {
+  font-size: var(--sl-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sl-fg-faint);
+}
+
+@media print {
+  .banner,
+  .rectangle {
+    display: none !important;
+  }
+}

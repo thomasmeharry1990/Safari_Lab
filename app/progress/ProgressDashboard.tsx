@@ -6,6 +6,7 @@ import { computeProgress } from '@/lib/engine';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { LineChart } from '@/components/charts/LineChart';
 import { BarChart } from '@/components/charts/BarChart';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { Button, Card, LinkButton, Panel, Section, Shell } from '@/components/ui';
 import styles from './progress.module.css';
 
@@ -106,6 +107,11 @@ export function ProgressDashboard() {
             </Card>
           </Section>
         ) : null}
+
+        {/* Ad below the dashboard highlights only (doctrine). */}
+        <div className={styles.noPrint}>
+          <AdSlot />
+        </div>
 
         <div className={styles.twoCol}>
           <Section tight>

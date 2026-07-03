@@ -12,6 +12,7 @@ import { Badge, Button, LinkButton, Section, Shell } from '@/components/ui';
 import { ExerciseLogger } from './ExerciseLogger';
 import { RestTimer } from './RestTimer';
 import { AdaptPanel } from './AdaptPanel';
+import { AdSlot } from '@/components/ads/AdSlot';
 import styles from './gym.module.css';
 
 function fmtElapsed(ms: number): string {
@@ -121,6 +122,8 @@ export function GymMode() {
                   Stay here
                 </Button>
               </div>
+              {/* Ad only after PRs + next action, below the fold (doctrine). */}
+              <AdSlot />
             </div>
           </Section>
         </Shell>

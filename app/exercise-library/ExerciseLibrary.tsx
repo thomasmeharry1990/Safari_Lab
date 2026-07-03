@@ -10,6 +10,7 @@ import {
   LEVEL_FACETS,
 } from '@/lib/data/exercises';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { Button } from '@/components/ui';
 import styles from './library.module.css';
 
@@ -112,11 +113,15 @@ export function ExerciseLibrary() {
           </Button>
         </div>
       ) : (
-        <div className={styles.grid}>
-          {results.map((ex) => (
-            <ExerciseCard key={ex.id} ex={ex} />
-          ))}
-        </div>
+        <>
+          <div className={styles.grid}>
+            {results.map((ex) => (
+              <ExerciseCard key={ex.id} ex={ex} />
+            ))}
+          </div>
+          {/* Ad below the first result group only, never between swap buttons. */}
+          <AdSlot />
+        </>
       )}
     </div>
   );

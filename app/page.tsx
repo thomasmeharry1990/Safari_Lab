@@ -9,6 +9,7 @@ import {
   IconShuffle,
   type IconProps,
 } from '@/components/brand/Icons';
+import { AdSlot } from '@/components/ads/AdSlot';
 import { BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
 import styles from './home.module.css';
 
@@ -172,6 +173,9 @@ export default function HomePage() {
             ))}
           </Grid>
         </Section>
+
+        {/* Ad allowed after the first feature band only (doctrine). */}
+        <AdSlot />
 
         {/* --- How it works --- */}
         <Section id="how-it-works" tight>
