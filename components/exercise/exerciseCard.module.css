@@ -1,0 +1,60 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sl-space-2);
+  padding: var(--sl-space-4);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  color: var(--sl-fg);
+  text-decoration: none;
+  transition: transform var(--sl-motion-base) var(--sl-ease),
+    border-color var(--sl-motion-base) var(--sl-ease);
+}
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--sl-gold);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sl-space-2);
+}
+.name {
+  font-size: var(--sl-fs-base);
+  font-weight: var(--sl-fw-semibold);
+  color: var(--sl-cream);
+  margin: 0;
+  line-height: var(--sl-lh-tight);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+}
+.muscle {
+  font-size: var(--sl-fs-xs);
+  font-weight: var(--sl-fw-semibold);
+  color: var(--sl-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tag {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.meta {
+  margin: 0;
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-muted);
+}
+.equipment {
+  color: var(--sl-fg-faint);
+  text-transform: capitalize;
+}

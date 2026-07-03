@@ -5,8 +5,8 @@ import styles from './footer.module.css';
 
 const TRAIN_LINKS: { href: string; label: string }[] = [
   { href: '/start', label: 'Start Your Safari' },
+  { href: '/exercise-library', label: 'Exercise Library' },
   { href: '/#how-it-works', label: 'How it works' },
-  { href: '/#features', label: 'Features' },
 ];
 
 const TRUST_LINKS: { href: string; label: string }[] = [
