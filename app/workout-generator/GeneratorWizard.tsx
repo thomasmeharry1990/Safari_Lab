@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import type { ExperienceLevel, MuscleGroup } from '@/lib/models/exercise';
 import type { TrainingGoal } from '@/lib/models/program';
-import { generateProgram } from '@/lib/engine';
+import { buildSwap, generateProgram } from '@/lib/engine';
 import type {
   AvoidFlag,
   DraftProgram,
@@ -76,6 +76,8 @@ export function GeneratorWizard() {
   const [equipment, setEquipment] = useState<EquipmentProfile>('full_gym');
   const [avoid, setAvoid] = useState<AvoidFlag[]>([]);
   const [program, setProgram] = useState<DraftProgram | null>(null);
+  const [activeInput, setActiveInput] = useState<GeneratorInput | null>(null);
+  const [blocked, setBlocked] = useState<string[]>([]);
   const resultRef = useRef<HTMLDivElement>(null);
 
   function togglePriority(m: MuscleGroup) {
@@ -93,22 +95,60 @@ export function GeneratorWizard() {
     );
   }
 
-  function generate() {
-    const input: GeneratorInput = {
-      goal,
-      experience,
-      weeks,
-      daysPerWeek,
-      split,
-      durationMinutes,
-      priorityMuscles,
-      equipment,
-      avoid,
-    };
+  function run(input: GeneratorInput, scroll: boolean) {
+    setActiveInput(input);
     setProgram(generateProgram(input));
-    requestAnimationFrame(() =>
-      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (scroll) {
+      requestAnimationFrame(() =>
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      );
+    }
+  }
+
+  function generate() {
+    run(
+      {
+        goal,
+        experience,
+        weeks,
+        daysPerWeek,
+        split,
+        durationMinutes,
+        priorityMuscles,
+        equipment,
+        avoid,
+        blocked,
+      },
+      true
     );
+  }
+
+  function handleBlock(id: string) {
+    if (!activeInput) return;
+    const next = blocked.includes(id) ? blocked : [...blocked, id];
+    setBlocked(next);
+    run({ ...activeInput, blocked: next }, false);
+  }
+
+  function handleUnblock(id: string) {
+    if (!activeInput) return;
+    const next = blocked.filter((x) => x !== id);
+    setBlocked(next);
+    run({ ...activeInput, blocked: next }, false);
+  }
+
+  function handleSwap(si: number, ei: number, newExId: string) {
+    if (!program || !activeInput) return;
+    const slot = program.sessions[si]?.exercises[ei];
+    if (!slot) return;
+    const replacement = buildSwap(newExId, slot.muscle, activeInput);
+    if (!replacement) return;
+    const sessions = program.sessions.map((s, i) =>
+      i !== si
+        ? s
+        : { ...s, exercises: s.exercises.map((e, j) => (j !== ei ? e : replacement)) }
+    );
+    setProgram({ ...program, sessions });
   }
 
   const isLast = step === STEPS.length - 1;
@@ -257,7 +297,7 @@ export function GeneratorWizard() {
         </div>
       </div>
 
-      {program ? (
+      {program && activeInput ? (
         <div ref={resultRef} className={styles.result}>
           <div className={styles.resultActions}>
             <Button variant="secondary" onClick={generate}>
@@ -267,7 +307,14 @@ export function GeneratorWizard() {
               Adjust inputs
             </Button>
           </div>
-          <DraftProgramView program={program} />
+          <DraftProgramView
+            program={program}
+            input={activeInput}
+            blocked={blocked}
+            onSwap={handleSwap}
+            onBlock={handleBlock}
+            onUnblock={handleUnblock}
+          />
         </div>
       ) : null}
     </div>

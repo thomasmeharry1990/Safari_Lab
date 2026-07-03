@@ -24,6 +24,10 @@ export interface GeneratorInput {
   priorityMuscles: MuscleGroup[];
   equipment: EquipmentProfile;
   avoid: AvoidFlag[];
+  /** Exercise ids the user has blocked. Never selected or offered as a swap. */
+  blocked?: string[];
+  /** Exercise ids the user favourites. Boosted during selection. */
+  favourites?: string[];
 }
 
 export interface DraftExercise {
@@ -37,6 +41,8 @@ export interface DraftExercise {
   isPriority: boolean;
   isCompound: boolean;
   isFinisher?: boolean;
+  /** True when the user manually swapped this slot from the generated pick. */
+  isSwapped?: boolean;
 }
 
 export interface DraftSession {

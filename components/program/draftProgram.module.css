@@ -115,15 +115,17 @@
   gap: var(--sl-space-1);
 }
 .exRow {
-  display: grid;
-  grid-template-columns: 1.5rem 1fr auto;
-  gap: var(--sl-space-3);
-  align-items: baseline;
   padding: var(--sl-space-2) 0;
   border-top: 1px solid rgba(212, 161, 90, 0.12);
 }
 .exRow:first-child {
   border-top: none;
+}
+.exLine {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto auto;
+  gap: var(--sl-space-2) var(--sl-space-3);
+  align-items: baseline;
 }
 .exOrder {
   font-size: var(--sl-fs-sm);
@@ -160,6 +162,9 @@
 .finTag {
   color: var(--sl-copper);
 }
+.swapTag {
+  color: var(--sl-muted-gold);
+}
 .exDose {
   text-align: right;
   font-size: var(--sl-fs-sm);
@@ -175,11 +180,128 @@
   color: var(--sl-fg-faint);
 }
 
+/* --- Exercise row actions + swap panel --- */
+.exActions {
+  display: inline-flex;
+  gap: var(--sl-space-1);
+  align-self: center;
+}
+.exBtn,
+.exBtnDanger {
+  padding: 4px var(--sl-space-2);
+  border-radius: var(--sl-radius-sm);
+  border: 1px solid var(--sl-border);
+  background-color: transparent;
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-xs);
+  cursor: pointer;
+}
+.exBtn:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+}
+.exBtnDanger:hover {
+  border-color: var(--sl-copper);
+  color: var(--sl-copper);
+}
+
+.swapPanel {
+  margin: var(--sl-space-2) 0 var(--sl-space-2) 1.5rem;
+  padding: var(--sl-space-2);
+  background-color: var(--sl-surface-2);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+}
+.swapEmpty {
+  margin: 0;
+  padding: var(--sl-space-2);
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-faint);
+}
+.swapList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.swapOption {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--sl-space-2);
+  border: none;
+  border-radius: var(--sl-radius-sm);
+  background-color: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.swapOption:hover {
+  background-color: rgba(212, 161, 90, 0.12);
+}
+.swapName {
+  color: var(--sl-cream);
+  font-size: var(--sl-fs-sm);
+  font-weight: var(--sl-fw-medium);
+}
+.swapMeta {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  text-transform: capitalize;
+}
+
+/* --- Blocked chips --- */
+.blocked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sl-space-2);
+  margin-bottom: var(--sl-space-5);
+  padding: var(--sl-space-3);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  background-color: var(--sl-surface-2);
+}
+.blockedLabel {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-faint);
+}
+.blockedChip {
+  padding: 4px var(--sl-space-3);
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid var(--sl-copper);
+  background-color: rgba(183, 107, 46, 0.14);
+  color: var(--sl-copper);
+  font-size: var(--sl-fs-xs);
+  cursor: pointer;
+}
+.blockedChip:hover {
+  background-color: rgba(183, 107, 46, 0.24);
+}
+
 .note {
   margin-top: var(--sl-space-6);
   font-size: var(--sl-fs-sm);
   color: var(--sl-fg-faint);
   max-width: 46rem;
+}
+
+@media (max-width: 600px) {
+  .exLine {
+    grid-template-columns: 1.5rem 1fr;
+  }
+  .exDose {
+    grid-column: 2;
+    text-align: left;
+    flex-direction: row;
+    gap: var(--sl-space-2);
+  }
+  .exActions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 600px) {

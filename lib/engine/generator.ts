@@ -1,30 +1,27 @@
 /**
- * Safari Lab - deterministic program generator (Stage 4).
+ * Safari Lab - deterministic program generator (Stage 4 + Stage 5 overrides).
  *
  * generateProgram(input) is pure and deterministic: the same input always yields
  * the same DraftProgram. No randomness, no Date, no network. Selection uses a
  * stable scoring function with id tie-breaks, and rotates exercise variants
  * across sessions so training days aren't identical.
  *
- * Follows the Bible generation rules: priority muscles get extra sets and earlier
- * placement; compounds are selected first; volume respects the canonical caps;
- * exercises are filtered by equipment, level and avoid flags.
+ * Honours user overrides: BLOCKED exercises are never selected; FAVOURITE
+ * exercises are boosted. Priority muscles get extra sets and earlier placement;
+ * compounds are selected first; volume respects the canonical caps; exercises are
+ * filtered by equipment, level and avoid flags.
  */
-import type {
-  ExerciseDefinition,
-  ExperienceLevel,
-  MuscleGroup,
-} from '@/lib/models/exercise';
+import type { ExerciseDefinition, MuscleGroup } from '@/lib/models/exercise';
 import type { TrainingGoal } from '@/lib/models/program';
 import { WEEKLY_VOLUME_CAPS } from '@/lib/models/adaptive';
 import { getAllExercises, muscleLabel } from '@/lib/data/exercises';
 import { chooseSplit, SESSION_FOCUS } from './split';
+import { isAvoided, levelOk, resolveAvailable, usable } from './filters';
+import { buildDraftExercise } from './dose';
 import type {
-  AvoidFlag,
   DraftExercise,
   DraftProgram,
   DraftSession,
-  EquipmentProfile,
   GeneratorInput,
 } from './types';
 
@@ -35,60 +32,7 @@ const EX_PER_DURATION: Record<GeneratorInput['durationMinutes'], number> = {
   75: 6,
 };
 
-const PROFILE_EQUIPMENT: Record<EquipmentProfile, Set<string> | 'all'> = {
-  full_gym: 'all',
-  dumbbells: new Set([
-    'dumbbells', 'dumbbell', 'bench', 'bodyweight', 'plate', 'box',
-    'kettlebell', 'kettlebells', 'band', 'ez-bar',
-  ]),
-  home: new Set([
-    'dumbbells', 'dumbbell', 'bench', 'bodyweight', 'band', 'kettlebell',
-    'kettlebells', 'plate', 'box', 'pullup-bar', 'ez-bar', 'ab-wheel', 'bar',
-  ]),
-  bodyweight: new Set(['bodyweight', 'band', 'pullup-bar', 'box', 'dip-bars', 'ab-wheel', 'bar']),
-};
-
-const LEVEL_RANK: Record<ExperienceLevel, number> = {
-  beginner: 0,
-  intermediate: 1,
-  advanced: 2,
-};
-
 const SETUP_PENALTY = { low: 0, medium: 4, high: 8 } as const;
-
-function usable(ex: ExerciseDefinition, available: Set<string> | 'all'): boolean {
-  if (available === 'all') return true;
-  return ex.equipment.every((e) => available.has(e));
-}
-
-function isAvoided(ex: ExerciseDefinition, flags: AvoidFlag[]): boolean {
-  for (const f of flags) {
-    if (f === 'no_barbell' && ex.equipment.includes('barbell')) return true;
-    if (f === 'knee' && (ex.movementPattern === 'lunge' || ex.swapGroup === 'knee-dominant'))
-      return true;
-    if (
-      f === 'shoulder' &&
-      (ex.movementPattern === 'vertical_push' ||
-        ex.swapGroup === 'overhead-press' ||
-        ex.swapGroup === 'dip')
-    )
-      return true;
-    if (
-      f === 'lower_back' &&
-      (ex.swapGroup === 'deadlift-variant' ||
-        ex.secondaryMuscles.includes('lower_back') ||
-        (ex.movementPattern === 'hinge' && ex.equipment.includes('barbell')))
-    )
-      return true;
-  }
-  return false;
-}
-
-function goalRepKey(goal: TrainingGoal): 'hypertrophy' | 'strength' | 'endurance' {
-  if (goal === 'strength') return 'strength';
-  if (goal === 'endurance_support') return 'endurance';
-  return 'hypertrophy';
-}
 
 const GOAL_WORD: Record<string, string> = {
   build_muscle: 'Build',
@@ -100,27 +44,24 @@ const GOAL_WORD: Record<string, string> = {
   'fatigue-management': 'Recovery',
 };
 
-function clamp(n: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, n));
-}
-
 export function generateProgram(input: GeneratorInput): DraftProgram {
   const lib = getAllExercises();
-  const available = PROFILE_EQUIPMENT[input.equipment];
+  const available = resolveAvailable(input.equipment);
   const prioritySet = new Set(input.priorityMuscles);
-  const repKey = goalRepKey(input.goal);
+  const blockedSet = new Set(input.blocked ?? []);
+  const favouriteSet = new Set(input.favourites ?? []);
   const { sessions: templates, label } = chooseSplit(input.daysPerWeek, input.split);
   const perSession = EX_PER_DURATION[input.durationMinutes];
   const wantsConditioning =
     input.goal === 'fat_loss_support' || input.goal === 'endurance_support';
 
-  // --- score + rank candidates for a muscle (cached) ---
   const rankCache = new Map<MuscleGroup, ExerciseDefinition[]>();
 
   function score(muscle: MuscleGroup, ex: ExerciseDefinition): number {
     let s = ex.primaryMuscle === muscle ? 100 : 45;
     if (ex.compound) s += 25;
     if (prioritySet.has(muscle)) s += 15;
+    if (favouriteSet.has(ex.id)) s += 40;
     if (input.goal === 'strength' && ex.compound) s += 15;
     if (wantsConditioning && ex.isolation) s += 5;
     if (input.durationMinutes <= 45) s -= SETUP_PENALTY[ex.setupDifficulty];
@@ -136,7 +77,8 @@ export function generateProgram(input: GeneratorInput): DraftProgram {
         (ex) =>
           ex.primaryMuscle !== 'cardio' &&
           ex.movementPattern !== 'mobility' &&
-          LEVEL_RANK[ex.difficulty] <= LEVEL_RANK[input.experience] &&
+          !blockedSet.has(ex.id) &&
+          levelOk(ex, input.experience) &&
           usable(ex, available) &&
           !isAvoided(ex, input.avoid) &&
           (ex.primaryMuscle === muscle || ex.secondaryMuscles.includes(muscle))
@@ -151,33 +93,11 @@ export function generateProgram(input: GeneratorInput): DraftProgram {
 
   const musclePickCount = new Map<MuscleGroup, number>();
 
-  function toDraft(ex: ExerciseDefinition, muscle: MuscleGroup): DraftExercise {
-    const repRange = ex.targetRepRanges[repKey] ?? ex.defaultRepRange;
-    let sets = clamp(ex.defaultSets, 2, 5);
-    if (prioritySet.has(muscle)) sets = Math.min(sets + 1, ex.compound ? 5 : 4);
-    const rest =
-      input.goal === 'strength'
-        ? ex.restSeconds.max
-        : wantsConditioning
-          ? ex.restSeconds.min
-          : Math.round((ex.restSeconds.min + ex.restSeconds.max) / 2);
-    return {
-      exerciseId: ex.id,
-      name: ex.name,
-      slug: ex.slug,
-      muscle,
-      sets,
-      repRange,
-      restSeconds: rest,
-      isPriority: prioritySet.has(muscle),
-      isCompound: ex.compound,
-    };
-  }
-
   const conditioningPool = lib.filter(
     (ex) =>
       ex.primaryMuscle === 'cardio' &&
       ex.movementPattern === 'conditioning' &&
+      !blockedSet.has(ex.id) &&
       usable(ex, available)
   );
 
@@ -208,13 +128,11 @@ export function generateProgram(input: GeneratorInput): DraftProgram {
       usedIds.add(pick.id);
       usedSwap.add(pick.swapGroup);
       musclePickCount.set(muscle, (musclePickCount.get(muscle) ?? 0) + 1);
-      chosen.push(toDraft(pick, muscle));
+      chosen.push(buildDraftExercise(pick, muscle, input));
     }
 
-    // compounds first, then keep insertion order
     chosen.sort((a, b) => Number(b.isCompound) - Number(a.isCompound));
 
-    // conditioning finisher for fat-loss / endurance goals
     if (wantsConditioning && conditioningPool.length) {
       const cardio = conditioningPool[dayIndex % conditioningPool.length]!;
       chosen.push({
@@ -241,11 +159,8 @@ export function generateProgram(input: GeneratorInput): DraftProgram {
     };
   }
 
-  const sessions = templates.map((tpl, i) =>
-    buildSession(tpl.key, tpl.title, i)
-  );
+  const sessions = templates.map((tpl, i) => buildSession(tpl.key, tpl.title, i));
 
-  // --- weekly volume per primary muscle (working sets, excludes finishers) ---
   const volumeMap = new Map<MuscleGroup, number>();
   for (const s of sessions) {
     for (const ex of s.exercises) {
@@ -272,6 +187,9 @@ export function generateProgram(input: GeneratorInput): DraftProgram {
   }
   if (wantsConditioning) {
     summary.push('A short conditioning finisher is added to each session to support your goal.');
+  }
+  if (blockedSet.size) {
+    summary.push(`${blockedSet.size} blocked exercise${blockedSet.size > 1 ? 's are' : ' is'} excluded from this plan.`);
   }
 
   return {
@@ -314,10 +232,10 @@ function hashInput(input: GeneratorInput): string {
 }
 
 function estimateMinutes(exercises: DraftExercise[]): number {
-  let mins = 6; // warm-up allowance
+  let mins = 6;
   for (const ex of exercises) {
     const avgReps = (ex.repRange[0] + ex.repRange[1]) / 2;
-    const perSet = avgReps * 3 + ex.restSeconds; // seconds
+    const perSet = avgReps * 3 + ex.restSeconds;
     mins += (ex.sets * perSet) / 60;
   }
   return Math.round(mins);
