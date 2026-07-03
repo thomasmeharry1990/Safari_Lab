@@ -1,0 +1,194 @@
+/* --- Stepper --- */
+.steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+  margin: 0 0 var(--sl-space-5);
+  padding: 0;
+}
+.step,
+.stepActive,
+.stepDone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sl-space-2);
+  padding: var(--sl-space-2) var(--sl-space-3);
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid var(--sl-border);
+  font-size: var(--sl-fs-sm);
+}
+.step {
+  color: var(--sl-fg-faint);
+}
+.stepActive {
+  color: var(--sl-on-gold);
+  background-color: var(--sl-gold);
+  border-color: var(--sl-gold);
+}
+.stepDone {
+  color: var(--sl-gold);
+}
+.stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  font-size: var(--sl-fs-xs);
+  font-weight: var(--sl-fw-semibold);
+}
+.stepActive .stepNum {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* --- Panel --- */
+.panel {
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-lg);
+  padding: var(--sl-space-5);
+}
+
+.field {
+  margin-bottom: var(--sl-space-5);
+}
+.field:last-of-type {
+  margin-bottom: 0;
+}
+.fieldLabel {
+  display: block;
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  color: var(--sl-cream);
+  margin-bottom: var(--sl-space-1);
+}
+.fieldHint {
+  display: block;
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-faint);
+  margin-bottom: var(--sl-space-3);
+}
+
+/* --- Segmented control --- */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+  margin-top: var(--sl-space-2);
+}
+.seg,
+.segOn {
+  min-height: var(--sl-tap-min);
+  padding: var(--sl-space-2) var(--sl-space-4);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface-2);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  cursor: pointer;
+  transition: border-color var(--sl-motion-fast) var(--sl-ease),
+    color var(--sl-motion-fast) var(--sl-ease);
+}
+.seg:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-cream);
+}
+.segOn {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.12);
+  font-weight: var(--sl-fw-semibold);
+}
+
+/* --- Chips --- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+}
+.chip,
+.chipOn {
+  min-height: var(--sl-tap-min);
+  padding: var(--sl-space-2) var(--sl-space-4);
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface-2);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  cursor: pointer;
+}
+.chip:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-cream);
+}
+.chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.chipOn {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.14);
+  font-weight: var(--sl-fw-semibold);
+}
+
+/* --- Option cards (equipment) --- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sl-space-3);
+  margin-top: var(--sl-space-2);
+}
+.optCard,
+.optCardOn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sl-space-4);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface-2);
+  text-align: left;
+  cursor: pointer;
+}
+.optCard:hover {
+  border-color: var(--sl-gold);
+}
+.optCardOn {
+  border-color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.1);
+}
+.optCardLabel {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  color: var(--sl-cream);
+}
+.optCardNote {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-faint);
+}
+
+/* --- Nav --- */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+  margin-top: var(--sl-space-6);
+  padding-top: var(--sl-space-4);
+  border-top: 1px solid var(--sl-border);
+}
+
+/* --- Result --- */
+.result {
+  margin-top: var(--sl-space-8);
+  padding-top: var(--sl-space-6);
+  border-top: 2px solid var(--sl-border);
+}
+.resultActions {
+  display: flex;
+  gap: var(--sl-space-3);
+  margin-bottom: var(--sl-space-5);
+}

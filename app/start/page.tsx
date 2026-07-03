@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react';
 import type { Metadata } from 'next';
-import { Badge, Button, Card, Grid, Section, Shell } from '@/components/ui';
+import { Badge, Button, Card, Grid, LinkButton, Section, Shell } from '@/components/ui';
 import {
   IconCompass,
   IconDownload,
@@ -15,24 +15,31 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const ROUTES: { title: string; body: string; Icon: ComponentType<IconProps> }[] =
-  [
-    {
-      title: 'Create a program',
-      body: 'Answer a few questions and generate an adaptive 4–12 week block around your goal, days and equipment.',
-      Icon: IconCompass,
-    },
-    {
-      title: 'Quick Safari',
-      body: 'One-off session built for the time and equipment you have right now — no program required.',
-      Icon: IconShuffle,
-    },
-    {
-      title: 'Import a save file',
-      body: 'Already have a .slfit file? Bring your programs, history and progress onto this device.',
-      Icon: IconDownload,
-    },
-  ];
+const ROUTES: {
+  title: string;
+  body: string;
+  Icon: ComponentType<IconProps>;
+  href?: string;
+  cta?: string;
+}[] = [
+  {
+    title: 'Create a program',
+    body: 'Answer a few questions and generate an adaptive 4–12 week block around your goal, days and equipment.',
+    Icon: IconCompass,
+    href: '/workout-generator',
+    cta: 'Build a program',
+  },
+  {
+    title: 'Quick Safari',
+    body: 'One-off session built for the time and equipment you have right now — no program required.',
+    Icon: IconShuffle,
+  },
+  {
+    title: 'Import a save file',
+    body: 'Already have a .slfit file? Bring your programs, history and progress onto this device.',
+    Icon: IconDownload,
+  },
+];
 
 export default function StartPage() {
   return (
@@ -51,20 +58,30 @@ export default function StartPage() {
                   <span className={styles.routeIcon} aria-hidden="true">
                     <r.Icon size={22} />
                   </span>
-                  <Badge tone="olive">Coming soon</Badge>
+                  {r.href ? (
+                    <Badge tone="gold">Ready</Badge>
+                  ) : (
+                    <Badge tone="olive">Coming soon</Badge>
+                  )}
                 </div>
                 <h2 className={styles.routeTitle}>{r.title}</h2>
                 <p className={styles.routeBody}>{r.body}</p>
-                <Button variant="secondary" disabled aria-disabled="true">
-                  Unlocks in an upcoming build stage
-                </Button>
+                {r.href ? (
+                  <LinkButton href={r.href} variant="primary">
+                    {r.cta}
+                  </LinkButton>
+                ) : (
+                  <Button variant="secondary" disabled aria-disabled="true">
+                    Unlocks in an upcoming build stage
+                  </Button>
+                )}
               </Card>
             ))}
           </Grid>
           <p className={styles.note}>
-            You’re looking at the Stage 1 shell. The generator, gym-mode logging
-            and save-file import arrive in later build stages — this page will
-            wire up to them as they land.
+            The program generator is live. Gym-mode logging and save-file import
+            arrive in later build stages — this page will wire up to them as they
+            land.
           </p>
         </Section>
       </Shell>
