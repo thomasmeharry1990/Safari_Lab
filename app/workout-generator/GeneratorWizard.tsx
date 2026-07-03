@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { ExperienceLevel, MuscleGroup } from '@/lib/models/exercise';
 import type { TrainingGoal } from '@/lib/models/program';
@@ -90,6 +90,28 @@ export function GeneratorWizard() {
   const [lockConfirm, setLockConfirm] = useState(false);
   const router = useRouter();
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Prefill from a landing-page CTA (?goal=&days=&split=&muscles=&equipment=).
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const g = p.get('goal');
+    if (g && GOALS.some((o) => o.value === g)) setGoal(g as TrainingGoal);
+    const d = Number(p.get('days'));
+    if (DAYS.includes(d as GeneratorInput['daysPerWeek']))
+      setDaysPerWeek(d as GeneratorInput['daysPerWeek']);
+    const s = p.get('split');
+    if (s && SPLITS.some((o) => o.value === s)) setSplit(s as GeneratorSplit);
+    const eq = p.get('equipment');
+    if (eq && EQUIPMENT.some((o) => o.value === eq)) setEquipment(eq as EquipmentProfile);
+    const m = p.get('muscles');
+    if (m) {
+      const valid = m
+        .split(',')
+        .filter((x) => PRIORITY_OPTIONS.some((o) => o.value === x))
+        .slice(0, MAX_PRIORITY) as MuscleGroup[];
+      if (valid.length) setPriority(valid);
+    }
+  }, []);
 
   function togglePriority(m: MuscleGroup) {
     setPriority((prev) =>

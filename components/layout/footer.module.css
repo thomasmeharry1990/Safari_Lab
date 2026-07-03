@@ -10,7 +10,7 @@
   margin-inline: auto;
   padding: var(--sl-space-8) var(--sl-space-4) var(--sl-space-6);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--sl-space-6);
 }
 

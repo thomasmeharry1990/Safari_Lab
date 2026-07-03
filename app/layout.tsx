@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { APP_DISPLAY_NAME, DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
 import { BRAND_COLORS } from '@/lib/constants/brand';
+import { SITE_NAME, SITE_URL } from '@/lib/constants/site';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { LocalDataProvider } from '@/lib/state/LocalDataProvider';
@@ -10,18 +11,27 @@ import './globals.css';
 /**
  * Root layout.
  *
- * NOTE: the whole site is a pre-launch shell during staged build. Per doctrine
- * "no unfinished public page is indexable", robots is set to noindex globally
- * for now. This is relaxed per-route in Stage 15 (SEO) once pages are finished.
+ * Default is indexable (marketing + content pages). App/tool pages set their own
+ * `robots: { index: false }` so unfinished/private app screens stay out of search
+ * (doctrine: no unfinished page indexable).
  */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${APP_DISPLAY_NAME} - Adaptive Workout Planner`,
+    default: `${APP_DISPLAY_NAME} - Free Adaptive Workout Planner`,
     template: `%s | ${APP_DISPLAY_NAME}`,
   },
   description: DOCTRINE_STATEMENT,
   applicationName: APP_DISPLAY_NAME,
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    title: `${APP_DISPLAY_NAME} - Free Adaptive Workout Planner`,
+    description: DOCTRINE_STATEMENT,
+    url: SITE_URL,
+  },
   icons: {
     icon: '/icon.svg',
     apple: '/icon.svg',

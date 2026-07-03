@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   title: 'Exercise Library',
   description:
     'Search and filter a library of gym exercises by muscle, equipment and level, with form cues and substitutions.',
-  robots: { index: false, follow: false },
 };
 
 export default function ExerciseLibraryPage() {

@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: 'Terms & Fitness Disclaimer',
   description:
     'Safari Lab is an educational fitness tool, not medical advice. Train responsibly.',
-  robots: { index: false, follow: false },
 };
 
 export default function TermsPage() {

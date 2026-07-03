@@ -11,6 +11,8 @@ import {
   patternLabel,
 } from '@/lib/data/exercises';
 import { formatDose } from '@/lib/data/exercises/factory';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/constants/site';
 import styles from './detail.module.css';
 
 /** Static export: pre-render one page per exercise slug. */
@@ -28,7 +30,7 @@ export function generateMetadata({
   return {
     title: ex.seo.title,
     description: ex.seo.description,
-    robots: { index: false, follow: false },
+    alternates: { canonical: `/exercises/${ex.slug}` },
   };
 }
 
@@ -64,8 +66,19 @@ export default function ExerciseDetailPage({
     },
   ];
 
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Exercise Library', item: `${SITE_URL}/exercise-library/` },
+      { '@type': 'ListItem', position: 3, name: ex.name, item: `${SITE_URL}/exercises/${ex.slug}/` },
+    ],
+  };
+
   return (
     <main>
+      <JsonLd data={breadcrumb} />
       <Shell>
         <Section className={styles.top}>
           <nav className={styles.crumbs} aria-label="Breadcrumb">

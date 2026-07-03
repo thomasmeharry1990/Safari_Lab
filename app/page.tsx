@@ -10,8 +10,37 @@ import {
   type IconProps,
 } from '@/components/brand/Icons';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
+import { DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
+import { SITE_NAME, SITE_URL } from '@/lib/constants/site';
 import styles from './home.module.css';
+
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: DOCTRINE_STATEMENT,
+    },
+    {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_URL,
+      logo: `${SITE_URL}/icon.svg`,
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: SITE_NAME,
+      applicationCategory: 'HealthApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: DOCTRINE_STATEMENT,
+    },
+  ],
+};
 
 const TRUST = [
   'No account required',
@@ -82,6 +111,7 @@ const STEPS: { n: string; title: string; body: string }[] = [
 export default function HomePage() {
   return (
     <main>
+      <JsonLd data={homeJsonLd} />
       {/* --- Hero --- */}
       <Shell>
         <Section className={styles.hero}>

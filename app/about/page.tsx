@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   title: 'About',
   description:
     'Safari Lab is a free, local-first adaptive workout planner. Here is the idea behind it.',
-  robots: { index: false, follow: false },
 };
 
 export default function AboutPage() {

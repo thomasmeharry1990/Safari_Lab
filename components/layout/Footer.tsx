@@ -9,6 +9,14 @@ const TRAIN_LINKS: { href: string; label: string }[] = [
   { href: '/backup', label: 'Backup & save files' },
 ];
 
+const EXPLORE_LINKS: { href: string; label: string }[] = [
+  { href: '/goals/build-muscle', label: 'Build muscle' },
+  { href: '/programs', label: 'Program templates' },
+  { href: '/splits/push-pull-legs', label: 'Push / Pull / Legs' },
+  { href: '/muscle-groups/glutes', label: 'Glute training' },
+  { href: '/equipment/dumbbells', label: 'Dumbbells only' },
+];
+
 const TRUST_LINKS: { href: string; label: string }[] = [
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms & disclaimer' },
@@ -34,6 +42,15 @@ export function Footer() {
         <nav className={styles.linkCol} aria-label="Train">
           <h2 className={styles.colTitle}>Train</h2>
           {TRAIN_LINKS.map((l) => (
+            <Link key={l.href} href={l.href} className={styles.footLink}>
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <nav className={styles.linkCol} aria-label="Explore">
+          <h2 className={styles.colTitle}>Explore</h2>
+          {EXPLORE_LINKS.map((l) => (
             <Link key={l.href} href={l.href} className={styles.footLink}>
               {l.label}
             </Link>

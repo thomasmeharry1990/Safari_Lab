@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: 'Privacy',
   description:
     'How Safari Lab handles your data: workouts stay on your device, nothing is uploaded.',
-  robots: { index: false, follow: false },
 };
 
 export default function PrivacyPage() {
