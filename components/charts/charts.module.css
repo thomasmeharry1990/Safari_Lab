@@ -1,0 +1,78 @@
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.axis {
+  stroke: var(--sl-border);
+  stroke-width: 1;
+}
+.areaFill {
+  fill: url(#sl-area);
+}
+.linePath {
+  fill: none;
+  stroke: var(--sl-gold);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.dot {
+  fill: var(--sl-gold);
+}
+.tick {
+  fill: var(--sl-fg-faint);
+  font-size: 11px;
+  font-family: var(--sl-font-body);
+}
+.unit {
+  fill: var(--sl-fg-faint);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.empty {
+  color: var(--sl-fg-faint);
+  font-size: var(--sl-fs-sm);
+  margin: 0;
+}
+
+/* --- Bar chart --- */
+.bars {
+  display: grid;
+  gap: var(--sl-space-2);
+}
+.barRow {
+  display: grid;
+  grid-template-columns: 7rem 1fr 3rem;
+  align-items: center;
+  gap: var(--sl-space-3);
+}
+.barLabel {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-cream);
+}
+.barTrack {
+  height: 10px;
+  background-color: var(--sl-surface-2);
+  border-radius: var(--sl-radius-pill);
+  overflow: hidden;
+}
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--sl-radius-pill);
+  background-color: var(--sl-gold);
+}
+.barValue {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .barRow {
+    grid-template-columns: 5.5rem 1fr 2.5rem;
+  }
+}

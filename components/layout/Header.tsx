@@ -5,8 +5,8 @@ import styles from './header.module.css';
 
 const NAV_LINKS: { href: string; label: string }[] = [
   { href: '/program', label: 'My Program' },
+  { href: '/progress', label: 'Progress' },
   { href: '/exercise-library', label: 'Exercises' },
-  { href: '/#how-it-works', label: 'How it works' },
   { href: '/about', label: 'About' },
 ];
 

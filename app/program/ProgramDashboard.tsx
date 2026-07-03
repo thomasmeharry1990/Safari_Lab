@@ -96,6 +96,9 @@ export function ProgramDashboard() {
               </p>
             </div>
             <div className={styles.controls}>
+              <LinkButton href="/progress" variant="secondary">
+                View progress
+              </LinkButton>
               <LinkButton href="/workout-generator" variant="secondary">
                 Build a new program
               </LinkButton>

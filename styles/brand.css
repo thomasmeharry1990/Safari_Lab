@@ -119,3 +119,15 @@ img {
   background: var(--sl-gold);
   color: var(--sl-on-gold);
 }
+
+/* Print: drop the app chrome so reports (e.g. /progress) print cleanly. */
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  body header,
+  body footer {
+    display: none !important;
+  }
+}

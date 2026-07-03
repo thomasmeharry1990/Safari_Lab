@@ -1,0 +1,129 @@
+.printRow {
+  margin-top: var(--sl-space-3);
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--sl-space-3);
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sl-space-4);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  text-align: center;
+}
+.statValue {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-2xl);
+  color: var(--sl-gold);
+}
+.statLabel {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chartCard,
+.panel {
+  padding: var(--sl-space-5);
+}
+.chartHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+  margin-bottom: var(--sl-space-3);
+}
+.h2 {
+  font-size: var(--sl-fs-lg);
+  color: var(--sl-cream);
+  margin: 0 0 var(--sl-space-3);
+}
+.chartHead .h2 {
+  margin-bottom: 0;
+}
+.select {
+  min-width: 12rem;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sl-space-4);
+}
+
+.prList,
+.recent {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.prList li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+  padding: var(--sl-space-2) 0;
+  border-top: 1px solid rgba(212, 161, 90, 0.12);
+}
+.prList li:first-child {
+  border-top: none;
+}
+.prName {
+  color: var(--sl-cream);
+}
+.prVal {
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.prE1rm {
+  color: var(--sl-fg-faint);
+}
+.muted {
+  color: var(--sl-fg-faint);
+  margin: 0;
+}
+
+.recentRow {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--sl-space-3);
+  padding: var(--sl-space-2) 0;
+  border-top: 1px solid rgba(212, 161, 90, 0.12);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+}
+.recentRow:first-child {
+  border-top: none;
+}
+.recentSets {
+  color: var(--sl-cream);
+}
+.recentVol {
+  color: var(--sl-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}

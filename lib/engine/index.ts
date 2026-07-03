@@ -32,3 +32,10 @@ export {
   type AdaptReason,
   type AdaptResult,
 } from './adapt';
+export {
+  computeProgress,
+  type ProgressStats,
+  type SeriesPoint,
+  type PRRow,
+  type StrengthOption,
+} from './progress';
