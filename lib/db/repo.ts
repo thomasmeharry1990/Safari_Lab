@@ -4,6 +4,7 @@
  */
 import { DB_STORES, SLFIT_SCHEMA_VERSION } from '@/lib/constants/db';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
+import type { ActiveProgram } from '@/lib/engine/types';
 import {
   idbClearAll,
   idbDelete,
@@ -71,6 +72,29 @@ export async function putOverride(o: ExerciseOverride): Promise<void> {
 
 export async function deleteOverride(exerciseId: string): Promise<void> {
   await idbDelete(DB_STORES.exerciseOverrides, exerciseId);
+}
+
+interface StoredActiveProgram extends ActiveProgram {
+  id: typeof SINGLETON;
+}
+
+export async function getActiveProgram(): Promise<ActiveProgram | null> {
+  if (!isBrowserDbAvailable()) return null;
+  const stored = await idbGet<StoredActiveProgram>(DB_STORES.activeProgram, SINGLETON);
+  if (!stored) return null;
+  const { id: _id, ...program } = stored;
+  return program;
+}
+
+export async function saveActiveProgram(program: ActiveProgram): Promise<void> {
+  await idbPut<StoredActiveProgram>(DB_STORES.activeProgram, {
+    id: SINGLETON,
+    ...program,
+  });
+}
+
+export async function clearActiveProgram(): Promise<void> {
+  await idbDelete(DB_STORES.activeProgram, SINGLETON);
 }
 
 /** Wipe all local data (settings, overrides, programs, sessions, everything). */

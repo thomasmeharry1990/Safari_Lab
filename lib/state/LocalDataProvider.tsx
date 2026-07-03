@@ -15,14 +15,19 @@ import {
   useState,
 } from 'react';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
+import type { ActiveProgram, DraftProgram } from '@/lib/engine/types';
+import { toActiveProgram } from '@/lib/engine';
 import {
+  clearActiveProgram,
   clearAllData,
   DEFAULT_SETTINGS,
   deleteOverride,
+  getActiveProgram,
   getAppMeta,
   getOverrides,
   getSettings,
   putOverride,
+  saveActiveProgram,
   saveSettings,
   type AppMeta,
 } from '@/lib/db/repo';
@@ -32,12 +37,15 @@ interface LocalDataValue {
   settings: UserSettings;
   overrides: ExerciseOverride[];
   appMeta: AppMeta | null;
+  activeProgram: ActiveProgram | null;
   blockedIds: string[];
   favouriteIds: string[];
   updateSettings: (patch: Partial<UserSettings>) => void;
   blockExercise: (exerciseId: string) => void;
   unblockExercise: (exerciseId: string) => void;
   toggleFavourite: (exerciseId: string) => void;
+  lockProgram: (draft: DraftProgram) => ActiveProgram;
+  endProgram: () => void;
   clearAll: () => Promise<void>;
 }
 
@@ -52,20 +60,23 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [overrides, setOverrides] = useState<ExerciseOverride[]>([]);
   const [appMeta, setAppMeta] = useState<AppMeta | null>(null);
+  const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
 
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const [s, o, m] = await Promise.all([
+        const [s, o, m, p] = await Promise.all([
           getSettings(),
           getOverrides(),
           getAppMeta(),
+          getActiveProgram(),
         ]);
         if (!active) return;
         setSettings(s);
         setOverrides(o);
         setAppMeta(m);
+        setActiveProgram(p);
       } catch {
         // IndexedDB unavailable (private mode, blocked) - stay on defaults.
       } finally {
@@ -119,10 +130,23 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     [overrides, upsertOverride]
   );
 
+  const lockProgram = useCallback((draft: DraftProgram): ActiveProgram => {
+    const program = toActiveProgram(draft, new Date().toISOString());
+    void saveActiveProgram(program);
+    setActiveProgram(program);
+    return program;
+  }, []);
+
+  const endProgram = useCallback(() => {
+    void clearActiveProgram();
+    setActiveProgram(null);
+  }, []);
+
   const clearAll = useCallback(async () => {
     await clearAllData();
     setSettings(DEFAULT_SETTINGS);
     setOverrides([]);
+    setActiveProgram(null);
     setAppMeta(await getAppMeta());
   }, []);
 
@@ -141,12 +165,15 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       settings,
       overrides,
       appMeta,
+      activeProgram,
       blockedIds,
       favouriteIds,
       updateSettings,
       blockExercise,
       unblockExercise,
       toggleFavourite,
+      lockProgram,
+      endProgram,
       clearAll,
     }),
     [
@@ -154,12 +181,15 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       settings,
       overrides,
       appMeta,
+      activeProgram,
       blockedIds,
       favouriteIds,
       updateSettings,
       blockExercise,
       unblockExercise,
       toggleFavourite,
+      lockProgram,
+      endProgram,
       clearAll,
     ]
   );

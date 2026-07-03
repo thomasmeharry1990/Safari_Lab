@@ -189,6 +189,19 @@
 }
 .resultActions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sl-space-3);
   margin-bottom: var(--sl-space-5);
+}
+.lockConfirm {
+  margin-bottom: var(--sl-space-5);
+  padding: var(--sl-space-4);
+  border: 1px solid var(--sl-copper);
+  border-radius: var(--sl-radius-md);
+  background-color: rgba(183, 107, 46, 0.1);
+}
+.lockConfirmText {
+  display: block;
+  margin-bottom: var(--sl-space-3);
+  color: var(--sl-copper);
 }

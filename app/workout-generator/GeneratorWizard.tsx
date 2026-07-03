@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { ExperienceLevel, MuscleGroup } from '@/lib/models/exercise';
 import type { TrainingGoal } from '@/lib/models/program';
 import { buildSwap, generateProgram } from '@/lib/engine';
@@ -78,7 +79,16 @@ export function GeneratorWizard() {
   const [avoid, setAvoid] = useState<AvoidFlag[]>([]);
   const [program, setProgram] = useState<DraftProgram | null>(null);
   const [activeInput, setActiveInput] = useState<GeneratorInput | null>(null);
-  const { blockedIds, favouriteIds, blockExercise, unblockExercise } = useLocalData();
+  const {
+    blockedIds,
+    favouriteIds,
+    blockExercise,
+    unblockExercise,
+    activeProgram,
+    lockProgram,
+  } = useLocalData();
+  const [lockConfirm, setLockConfirm] = useState(false);
+  const router = useRouter();
   const resultRef = useRef<HTMLDivElement>(null);
 
   function togglePriority(m: MuscleGroup) {
@@ -137,6 +147,21 @@ export function GeneratorWizard() {
     const next = blockedIds.filter((x) => x !== id);
     unblockExercise(id); // persists to IndexedDB
     run({ ...activeInput, blocked: next }, false);
+  }
+
+  function handleLock() {
+    if (!program) return;
+    if (activeProgram) {
+      setLockConfirm(true);
+      return;
+    }
+    doLock();
+  }
+
+  function doLock() {
+    if (!program) return;
+    lockProgram(program);
+    router.push('/program');
   }
 
   function handleSwap(si: number, ei: number, newExId: string) {
@@ -302,6 +327,9 @@ export function GeneratorWizard() {
       {program && activeInput ? (
         <div ref={resultRef} className={styles.result}>
           <div className={styles.resultActions}>
+            <Button variant="primary" onClick={handleLock}>
+              Lock this Safari
+            </Button>
             <Button variant="secondary" onClick={generate}>
               Regenerate
             </Button>
@@ -309,6 +337,21 @@ export function GeneratorWizard() {
               Adjust inputs
             </Button>
           </div>
+          {lockConfirm ? (
+            <div className={styles.lockConfirm}>
+              <span className={styles.lockConfirmText}>
+                You already have an active program. Locking this one replaces it.
+              </span>
+              <div className={styles.resultActions}>
+                <Button variant="primary" onClick={doLock}>
+                  Replace &amp; lock
+                </Button>
+                <Button variant="ghost" onClick={() => setLockConfirm(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : null}
           <DraftProgramView
             program={program}
             input={activeInput}

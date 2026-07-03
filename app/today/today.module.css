@@ -1,0 +1,50 @@
+.sub {
+  margin: var(--sl-space-3) 0 0;
+  color: var(--sl-fg-muted);
+}
+
+.dayNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+  margin-bottom: var(--sl-space-4);
+}
+.day,
+.dayOn {
+  min-height: 40px;
+  padding: var(--sl-space-2) var(--sl-space-4);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface-2);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  cursor: pointer;
+}
+.day:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-cream);
+}
+.dayOn {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.12);
+  font-weight: var(--sl-fw-semibold);
+}
+
+.gymNote {
+  margin-top: var(--sl-space-5);
+  padding: var(--sl-space-4);
+  border: 1px dashed var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+}
+.gymNote p {
+  margin: 0;
+  max-width: 44rem;
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-muted);
+}

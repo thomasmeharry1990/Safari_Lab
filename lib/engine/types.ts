@@ -69,3 +69,26 @@ export interface DraftProgram {
   summary: string[];
   input: GeneratorInput;
 }
+
+/**
+ * A locked, persisted program. Carries the draft's structure plus lock/progress
+ * state. Stored as the single active program in IndexedDB (Stage 7).
+ */
+export interface ActiveProgram {
+  programId: string;
+  name: string;
+  goal: TrainingGoal;
+  experience: ExperienceLevel;
+  weeks: number;
+  daysPerWeek: number;
+  split: GeneratorSplit;
+  resolvedSplit: string;
+  sessions: DraftSession[];
+  weeklyVolume: { muscle: MuscleGroup; sets: number; priority: boolean }[];
+  summary: string[];
+  input: GeneratorInput;
+  lockedAt: string;
+  currentWeek: number;
+  currentDayIndex: number;
+  status: 'active';
+}

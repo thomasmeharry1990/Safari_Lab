@@ -4,9 +4,9 @@ import { COPY } from '@/lib/constants/brand';
 import styles from './header.module.css';
 
 const NAV_LINKS: { href: string; label: string }[] = [
+  { href: '/program', label: 'My Program' },
   { href: '/exercise-library', label: 'Exercises' },
   { href: '/#how-it-works', label: 'How it works' },
-  { href: '/#features', label: 'Features' },
   { href: '/about', label: 'About' },
 ];
 
