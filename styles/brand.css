@@ -54,8 +54,11 @@ h4 {
   margin: 0 0 var(--sl-space-4);
 }
 
+/* Massive hero/page titles in Raleway Black; section headings stay ExtraBold. */
 h1 {
   font-size: var(--sl-fs-4xl);
+  font-weight: var(--sl-fw-black);
+  letter-spacing: -0.005em;
 }
 h2 {
   font-size: var(--sl-fs-2xl);

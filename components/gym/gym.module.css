@@ -273,7 +273,7 @@
   padding: 0 var(--sl-space-4);
   border-radius: var(--sl-radius-md);
   border: 1px solid transparent;
-  font-family: var(--sl-font-display);
+  font-family: var(--sl-font-body);
   font-weight: var(--sl-fw-semibold);
   font-size: var(--sl-fs-sm);
   cursor: pointer;

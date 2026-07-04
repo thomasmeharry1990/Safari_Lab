@@ -50,6 +50,7 @@
   --sl-fw-medium: 500;
   --sl-fw-semibold: 600;
   --sl-fw-extrabold: 800;
+  --sl-fw-black: 900;
 
   /* --- Spacing scale (4px base) --- */
   --sl-space-1: 0.25rem;

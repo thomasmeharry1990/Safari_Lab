@@ -42,10 +42,10 @@
   border-radius: var(--sl-radius-md);
   background-color: var(--sl-gold);
   color: var(--sl-on-gold);
-  font-family: var(--sl-font-display);
+  font-family: var(--sl-font-body);
   font-weight: var(--sl-fw-semibold);
   font-size: var(--sl-fs-sm);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   box-shadow: var(--sl-shadow-gold);
 }
 .cta:hover {
