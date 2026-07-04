@@ -175,6 +175,51 @@
   font-size: var(--sl-fs-sm);
 }
 
+/* --- Warm-up ramp --- */
+.warmup {
+  margin: 0 0 var(--sl-space-3);
+  padding: var(--sl-space-2) var(--sl-space-3);
+  background-color: var(--sl-surface-2);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+}
+.warmupSummary {
+  cursor: pointer;
+  color: var(--sl-muted-gold);
+  font-size: var(--sl-fs-sm);
+  font-weight: var(--sl-fw-medium);
+}
+.warmupList {
+  list-style: none;
+  margin: var(--sl-space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+}
+.warmupList li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sl-space-2);
+  padding: 3px var(--sl-space-2);
+  border-radius: var(--sl-radius-sm);
+  background-color: rgba(81, 86, 61, 0.35);
+}
+.warmupPct {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+}
+.warmupDose {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-cream);
+  font-variant-numeric: tabular-nums;
+}
+.warmupNote {
+  margin: var(--sl-space-2) 0 0;
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+}
+
 /* --- Set rows --- */
 .sets {
   list-style: none;

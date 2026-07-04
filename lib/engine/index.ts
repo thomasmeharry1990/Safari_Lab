@@ -4,6 +4,11 @@ export { chooseSplit, SESSION_FOCUS } from './split';
 export { generateProgram } from './generator';
 export { getSwapCandidates, buildSwap } from './swap';
 export { toActiveProgram } from './lock';
+export {
+  deloadSessions,
+  DELOAD_VOLUME_MULTIPLIER,
+  DELOAD_INTENSITY_MULTIPLIER,
+} from './deload';
 export { generateQuickSession, type QuickInput } from './quick';
 export {
   buildSessionLog,

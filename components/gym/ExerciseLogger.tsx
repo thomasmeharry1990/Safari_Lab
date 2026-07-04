@@ -56,6 +56,16 @@ export function ExerciseLogger({
   );
   const [showPlates, setShowPlates] = useState(false);
 
+  const workingWeight = Number(inputs[0]?.weight) || 0;
+  const showWarmup = !!ex?.requiresWarmUp && workingWeight > 0;
+  const warmupSets = showWarmup
+    ? (ex!.warmUpProtocol.rampPercentages ?? [0.5, 0.75]).map((p, i) => ({
+        pct: Math.round(p * 100),
+        weight: Math.round(workingWeight * p),
+        reps: ex!.warmUpProtocol.rampReps?.[i] ?? 5,
+      }))
+    : [];
+
   function update(idx: number, field: 'weight' | 'reps', value: string) {
     setInputs((prev) => prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r)));
   }
@@ -119,6 +129,28 @@ export function ExerciseLogger({
 
       {showPlates ? (
         <PlateCalc unit={unit} initialWeight={Number(inputs[0]?.weight) || undefined} />
+      ) : null}
+
+      {showWarmup ? (
+        <details className={styles.warmup}>
+          <summary className={styles.warmupSummary}>
+            Warm-up ramp ({warmupSets.length} sets)
+          </summary>
+          <ul className={styles.warmupList}>
+            {warmupSets.map((w, i) => (
+              <li key={i}>
+                <span className={styles.warmupPct}>{w.pct}%</span>
+                <span className={styles.warmupDose}>
+                  {w.weight}
+                  {unit} × {w.reps}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className={styles.warmupNote}>
+            Easy ramp-up sets to groove the movement — not your working sets.
+          </p>
+        </details>
       ) : null}
 
       <ol className={styles.sets}>

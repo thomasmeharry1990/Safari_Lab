@@ -22,6 +22,7 @@ import {
   buildQuickSessionLog,
   buildSessionLog,
   computePRs,
+  deloadSessions,
   finalizeSession,
   toActiveProgram,
   type PRResult,
@@ -70,6 +71,8 @@ interface LocalDataValue {
   lockProgram: (draft: DraftProgram) => ActiveProgram;
   endProgram: () => void;
   adaptSession: (dayIndex: number, session: DraftSession) => void;
+  startDeload: () => void;
+  endDeload: () => void;
   startSession: (dayIndex: number) => void;
   logSet: (
     blockId: string,
@@ -201,6 +204,29 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       if (!prev) return prev;
       const sessions = prev.sessions.map((s, i) => (i === dayIndex ? session : s));
       const next = { ...prev, sessions };
+      void saveActiveProgram(next);
+      return next;
+    });
+  }, []);
+
+  const startDeload = useCallback(() => {
+    setActiveProgram((prev) => {
+      if (!prev || prev.deload?.active) return prev;
+      const next: ActiveProgram = {
+        ...prev,
+        sessions: deloadSessions(prev.sessions),
+        deload: { active: true, original: prev.sessions },
+      };
+      void saveActiveProgram(next);
+      return next;
+    });
+  }, []);
+
+  const endDeload = useCallback(() => {
+    setActiveProgram((prev) => {
+      if (!prev?.deload?.active) return prev;
+      const { deload: _d, ...rest } = prev;
+      const next: ActiveProgram = { ...rest, sessions: prev.deload.original };
       void saveActiveProgram(next);
       return next;
     });
@@ -381,6 +407,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       lockProgram,
       endProgram,
       adaptSession,
+      startDeload,
+      endDeload,
       startSession,
       logSet,
       finishSession,
@@ -412,6 +440,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       lockProgram,
       endProgram,
       adaptSession,
+      startDeload,
+      endDeload,
       startSession,
       logSet,
       finishSession,

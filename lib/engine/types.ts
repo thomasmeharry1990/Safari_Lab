@@ -91,4 +91,6 @@ export interface ActiveProgram {
   currentWeek: number;
   currentDayIndex: number;
   status: 'active';
+  /** Present while a deload week is active; holds the original sessions for undo. */
+  deload?: { active: true; original: DraftSession[] };
 }

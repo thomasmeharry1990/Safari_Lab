@@ -9,7 +9,7 @@ import { Badge, Button, Card, LinkButton, Section, Shell } from '@/components/ui
 import styles from './program.module.css';
 
 export function ProgramDashboard() {
-  const { hydrated, activeProgram, endProgram } = useLocalData();
+  const { hydrated, activeProgram, endProgram, startDeload, endDeload } = useLocalData();
   const router = useRouter();
   const [confirmEnd, setConfirmEnd] = useState(false);
 
@@ -65,6 +65,20 @@ export function ProgramDashboard() {
       </PageIntro>
 
       <Shell>
+        {p.deload?.active ? (
+          <Section tight>
+            <div className={styles.deloadBanner}>
+              <span>
+                <strong>Deload week active</strong> — volume is reduced (~55%) for
+                recovery. Keep the reps crisp and leave some in the tank.
+              </span>
+              <Button variant="secondary" onClick={endDeload}>
+                End deload
+              </Button>
+            </div>
+          </Section>
+        ) : null}
+
         {today ? (
           <Section tight>
             <div className={styles.todayHead}>
@@ -91,14 +105,23 @@ export function ProgramDashboard() {
             <div>
               <h3 className={styles.h3}>Program controls</h3>
               <p className={styles.note}>
-                Set logging, progress and adaptation arrive in the next build
-                stages. Locked {new Date(p.lockedAt).toLocaleDateString()}.
+                Need a recovery week? A deload cuts your volume while keeping
+                technique sharp. Locked {new Date(p.lockedAt).toLocaleDateString()}.
               </p>
             </div>
             <div className={styles.controls}>
               <LinkButton href="/progress" variant="secondary">
                 View progress
               </LinkButton>
+              {p.deload?.active ? (
+                <Button variant="secondary" onClick={endDeload}>
+                  End deload
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={startDeload}>
+                  Deload this week
+                </Button>
+              )}
               <LinkButton href="/workout-generator" variant="secondary">
                 Build a new program
               </LinkButton>
