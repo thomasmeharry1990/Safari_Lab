@@ -8,6 +8,9 @@
 export const SITE_URL = 'https://safarilab.app';
 export const SITE_NAME = 'Safari Lab';
 
+/** Brand contact address. PLACEHOLDER — set the real mailbox with the domain. */
+export const CONTACT_EMAIL = 'hello@safarilab.app';
+
 /** App/tool routes that must never be indexed (per-route noindex). */
 export const NOINDEX_PREFIXES = [
   '/start',

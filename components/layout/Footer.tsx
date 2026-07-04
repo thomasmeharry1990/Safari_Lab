@@ -18,9 +18,10 @@ const EXPLORE_LINKS: { href: string; label: string }[] = [
 ];
 
 const TRUST_LINKS: { href: string; label: string }[] = [
+  { href: '/help', label: 'Help Centre' },
+  { href: '/contact', label: 'Contact' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms & disclaimer' },
-  { href: '/settings', label: 'Settings' },
   { href: '/about', label: 'About' },
 ];
 

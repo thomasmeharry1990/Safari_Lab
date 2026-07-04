@@ -11,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/about',
     '/privacy',
     '/terms',
+    '/help',
+    '/contact',
     '/exercise-library',
     '/goals',
     '/splits',
