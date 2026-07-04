@@ -1,0 +1,62 @@
+/* Labelled button (detail page) */
+.btn,
+.btnOn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sl-space-2);
+  min-height: 40px;
+  padding: 0 var(--sl-space-4);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface);
+  color: var(--sl-fg-muted);
+  font-family: var(--sl-font-body);
+  font-weight: var(--sl-fw-semibold);
+  font-size: var(--sl-fs-sm);
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-cream);
+}
+.btnOn {
+  border-color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.16);
+  color: var(--sl-gold);
+}
+.btn:disabled,
+.btnOn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Compact icon (card overlay) */
+.icon,
+.iconOn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid var(--sl-border);
+  background-color: rgba(17, 17, 17, 0.72);
+  backdrop-filter: blur(4px);
+  color: var(--sl-fg-muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.icon:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+}
+.iconOn {
+  border-color: var(--sl-gold);
+  color: var(--sl-gold);
+}
+.icon:disabled,
+.iconOn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

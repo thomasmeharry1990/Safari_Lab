@@ -27,6 +27,13 @@
   gap: var(--sl-space-3);
 }
 
+.nextBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-3);
+  margin-top: var(--sl-space-4);
+}
+
 .h2 {
   font-size: var(--sl-fs-xl);
   margin-bottom: var(--sl-space-3);

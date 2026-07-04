@@ -10,8 +10,10 @@ import {
   LEVEL_FACETS,
 } from '@/lib/data/exercises';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
+import { FavouriteButton } from '@/components/exercise/FavouriteButton';
 import { AdSlot } from '@/components/ads/AdSlot';
 import { Button } from '@/components/ui';
+import { useLocalData } from '@/lib/state/LocalDataProvider';
 import styles from './library.module.css';
 
 const ALL = getAllExercises();
@@ -19,24 +21,31 @@ const MUSCLES = getMuscleFacets();
 const EQUIPMENT = getEquipmentFacets();
 
 export function ExerciseLibrary() {
+  const { favouriteIds } = useLocalData();
   const [query, setQuery] = useState('');
   const [muscle, setMuscle] = useState<MuscleGroup | 'all'>('all');
   const [equipment, setEquipment] = useState<string | 'all'>('all');
   const [level, setLevel] = useState<ExperienceLevel | 'all'>('all');
+  const [favOnly, setFavOnly] = useState(false);
 
-  const results = useMemo(
-    () => filterExercises({ query, muscle, equipment, level }, ALL),
-    [query, muscle, equipment, level]
-  );
+  const results = useMemo(() => {
+    const base = filterExercises({ query, muscle, equipment, level }, ALL);
+    return favOnly ? base.filter((ex) => favouriteIds.includes(ex.id)) : base;
+  }, [query, muscle, equipment, level, favOnly, favouriteIds]);
 
   const hasFilters =
-    query !== '' || muscle !== 'all' || equipment !== 'all' || level !== 'all';
+    query !== '' ||
+    muscle !== 'all' ||
+    equipment !== 'all' ||
+    level !== 'all' ||
+    favOnly;
 
   function clear() {
     setQuery('');
     setMuscle('all');
     setEquipment('all');
     setLevel('all');
+    setFavOnly(false);
   }
 
   return (
@@ -90,6 +99,15 @@ export function ExerciseLibrary() {
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            className={favOnly ? styles.favToggleOn : styles.favToggle}
+            onClick={() => setFavOnly((v) => !v)}
+            aria-pressed={favOnly}
+          >
+            <span aria-hidden>{favOnly ? '★' : '☆'}</span> Favourites
+            {favouriteIds.length ? ` (${favouriteIds.length})` : ''}
+          </button>
           {hasFilters ? (
             <Button variant="ghost" onClick={clear}>
               Clear filters
@@ -104,9 +122,11 @@ export function ExerciseLibrary() {
 
       {results.length === 0 ? (
         <div className={styles.empty}>
-          <p>No movement found for that search.</p>
+          <p>{favOnly ? 'No favourites match this search yet.' : 'No movement found for that search.'}</p>
           <p className={styles.emptyHint}>
-            Try another muscle, equipment type or clear your filters.
+            {favOnly
+              ? 'Tap the star on any exercise to add it to your favourites.'
+              : 'Try another muscle, equipment type or clear your filters.'}
           </p>
           <Button variant="secondary" onClick={clear}>
             Clear filters
@@ -116,7 +136,12 @@ export function ExerciseLibrary() {
         <>
           <div className={styles.grid}>
             {results.map((ex) => (
-              <ExerciseCard key={ex.id} ex={ex} />
+              <div key={ex.id} className={styles.cardWrap}>
+                <ExerciseCard ex={ex} />
+                <div className={styles.favOverlay}>
+                  <FavouriteButton exerciseId={ex.id} variant="icon" />
+                </div>
+              </div>
             ))}
           </div>
           {/* Ad below the first result group only, never between swap buttons. */}

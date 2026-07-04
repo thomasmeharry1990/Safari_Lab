@@ -14,6 +14,7 @@ import type {
 } from '@/lib/models/save-file';
 import type { SessionLog } from '@/lib/models/session';
 import type { ActiveProgram } from '@/lib/engine/types';
+import type { CompletedProgram } from '@/lib/models/completed-program';
 
 export interface SlFitSaveFile {
   app: 'SafariLab';
@@ -26,6 +27,8 @@ export interface SlFitSaveFile {
   activeProgram: ActiveProgram | null;
   activeSession: SessionLog | null;
   sessionHistory: SessionLog[];
+  /** Retired program block reports. Optional for backward compatibility. */
+  completedPrograms: CompletedProgram[];
   migrationHistory: MigrationHistoryEntry[];
 }
 
@@ -74,6 +77,9 @@ export function validateSaveFile(raw: unknown): ValidationResult {
     activeSession: (obj.activeSession as SessionLog | null) ?? null,
     sessionHistory: Array.isArray(obj.sessionHistory)
       ? (obj.sessionHistory as SessionLog[])
+      : [],
+    completedPrograms: Array.isArray(obj.completedPrograms)
+      ? (obj.completedPrograms as CompletedProgram[])
       : [],
     migrationHistory: Array.isArray(obj.migrationHistory)
       ? (obj.migrationHistory as MigrationHistoryEntry[])

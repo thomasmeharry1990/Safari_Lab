@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
 import { lastAndBest, recommendNext, type PRResult, type WeightUnit } from '@/lib/engine';
 import type { SessionLog } from '@/lib/models/session';
+import type { CompletedProgram } from '@/lib/models/completed-program';
 import { getExerciseById } from '@/lib/data/exercises';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { SessionPlan } from '@/components/program/SessionPlan';
+import { BlockReport } from '@/components/program/BlockReport';
 import { Badge, Button, LinkButton, Section, Shell } from '@/components/ui';
 import { ExerciseLogger } from './ExerciseLogger';
 import { ExpeditionLogForm } from './ExpeditionLogForm';
@@ -28,17 +30,23 @@ export function GymMode() {
     activeSession,
     sessionHistory,
     settings,
+    otherTabsOpen,
     startSession,
     logSet,
     finishSession,
     abandonSession,
+    startNextBlock,
   } = useLocalData();
   const router = useRouter();
 
   const unit: WeightUnit = settings.unitSystem === 'imperial' ? 'lb' : 'kg';
   const [viewDay, setViewDay] = useState(activeProgram?.currentDayIndex ?? 0);
   const [rest, setRest] = useState<{ timerId: number; seconds: number } | null>(null);
-  const [completed, setCompleted] = useState<{ session: SessionLog; prs: PRResult[] } | null>(null);
+  const [completed, setCompleted] = useState<{
+    session: SessionLog;
+    prs: PRResult[];
+    completedProgram?: CompletedProgram;
+  } | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [confirmAbandon, setConfirmAbandon] = useState(false);
   const [showAdapt, setShowAdapt] = useState(false);
@@ -78,14 +86,15 @@ export function GymMode() {
     return map;
   }, [activeSession]);
 
-  if (!activeProgram) return null;
-
-  // --- Completion view ---
+  // --- Completion view (rendered even after a program is retired) ---
   if (completed) {
-    const { session, prs } = completed;
+    const { session, prs, completedProgram } = completed;
     return (
       <>
-        <PageIntro eyebrow="Session complete" title="Expedition logged" />
+        <PageIntro
+          eyebrow={completedProgram ? 'Program complete' : 'Session complete'}
+          title={completedProgram ? 'Expedition conquered' : 'Expedition logged'}
+        />
         <Shell>
           <Section tight>
             <div className={styles.complete}>
@@ -116,18 +125,66 @@ export function GymMode() {
                   chips will guide your next session.
                 </p>
               )}
+
+              {completedProgram ? (
+                <div className={styles.completeBlock}>
+                  <BlockReport program={completedProgram} />
+                </div>
+              ) : null}
+
               <ExpeditionLogForm sessionId={session.id} />
-              <div className={styles.completeActions}>
-                <LinkButton href="/program" variant="primary">
-                  Back to program
-                </LinkButton>
-                <Button variant="ghost" onClick={() => setCompleted(null)}>
-                  Stay here
-                </Button>
-              </div>
+
+              {completedProgram ? (
+                <div className={styles.completeActions}>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      startNextBlock(completedProgram);
+                      setCompleted(null);
+                      router.push('/today');
+                    }}
+                  >
+                    Start next block
+                  </Button>
+                  <LinkButton href="/workout-generator" variant="secondary">
+                    Build a new program
+                  </LinkButton>
+                  <LinkButton href="/progress" variant="ghost">
+                    View progress
+                  </LinkButton>
+                </div>
+              ) : (
+                <div className={styles.completeActions}>
+                  <LinkButton href="/program" variant="primary">
+                    Back to program
+                  </LinkButton>
+                  <Button variant="ghost" onClick={() => setCompleted(null)}>
+                    Stay here
+                  </Button>
+                </div>
+              )}
               {/* Ad only after PRs + next action, below the fold (doctrine). */}
               <AdSlot />
             </div>
+          </Section>
+        </Shell>
+      </>
+    );
+  }
+
+  if (!activeProgram) {
+    return (
+      <>
+        <PageIntro
+          eyebrow="Today's Safari"
+          title="No expedition in progress"
+          lede="Lock a program and your next session shows up here, ready to train."
+        />
+        <Shell>
+          <Section tight>
+            <LinkButton href="/workout-generator" variant="primary">
+              Build a program
+            </LinkButton>
           </Section>
         </Shell>
       </>
@@ -157,6 +214,11 @@ export function GymMode() {
               {setsLogged}/{targetTotal} sets
             </Badge>
             {!online ? <Badge tone="copper">Offline</Badge> : null}
+            {otherTabsOpen ? (
+              <Badge tone="copper" title="Your logs sync automatically across tabs">
+                Open in another tab
+              </Badge>
+            ) : null}
           </div>
         </PageIntro>
 

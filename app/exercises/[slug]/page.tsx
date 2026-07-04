@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Badge, Panel, Pill, Section, Shell } from '@/components/ui';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
+import { FavouriteButton } from '@/components/exercise/FavouriteButton';
 import {
   getAllExercises,
   getAlternatives,
@@ -97,6 +98,9 @@ export default function ExerciseDetailPage({
               {ex.unilateral ? <Badge tone="olive">Single-side</Badge> : null}
               {ex.plateCalculator ? <Badge tone="olive">Barbell</Badge> : null}
             </div>
+          </div>
+          <div className={styles.favRow}>
+            <FavouriteButton exerciseId={ex.id} />
           </div>
           {ex.aliases.length ? (
             <p className={styles.aliases}>Also known as: {ex.aliases.join(', ')}</p>

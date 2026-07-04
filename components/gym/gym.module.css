@@ -445,6 +445,9 @@
   flex-wrap: wrap;
   gap: var(--sl-space-3);
 }
+.completeBlock {
+  margin-bottom: var(--sl-space-5);
+}
 
 /* --- Expedition log capture --- */
 .exped {

@@ -6,6 +6,7 @@ import { DB_STORES, SLFIT_SCHEMA_VERSION } from '@/lib/constants/db';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { ActiveProgram } from '@/lib/engine/types';
 import type { SessionLog } from '@/lib/models/session';
+import type { CompletedProgram } from '@/lib/models/completed-program';
 import {
   idbClearAll,
   idbClearStore,
@@ -103,6 +104,25 @@ export async function saveActiveProgram(program: ActiveProgram): Promise<void> {
 
 export async function clearActiveProgram(): Promise<void> {
   await idbDelete(DB_STORES.activeProgram, SINGLETON);
+}
+
+// --- Completed programs (collection, block-report summaries) ---
+
+export async function getCompletedPrograms(): Promise<CompletedProgram[]> {
+  if (!isBrowserDbAvailable()) return [];
+  return idbGetAll<CompletedProgram>(DB_STORES.completedPrograms);
+}
+
+export async function addCompletedProgram(record: CompletedProgram): Promise<void> {
+  await idbPut(DB_STORES.completedPrograms, record);
+}
+
+/** Replace the whole completed-programs store (used on import). */
+export async function replaceCompletedPrograms(
+  list: CompletedProgram[]
+): Promise<void> {
+  await idbClearStore(DB_STORES.completedPrograms);
+  await Promise.all(list.map((r) => idbPut(DB_STORES.completedPrograms, r)));
 }
 
 // --- Active gym session (singleton) + completed session history (collection) ---

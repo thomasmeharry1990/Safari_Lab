@@ -1,0 +1,110 @@
+.report {
+  padding: var(--sl-space-5);
+  border: 1px solid var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.06);
+}
+.head {
+  margin-bottom: var(--sl-space-4);
+}
+.eyebrow {
+  display: block;
+  font-size: var(--sl-fs-sm);
+  font-weight: var(--sl-fw-semibold);
+  color: var(--sl-gold);
+  letter-spacing: 0.02em;
+}
+.name {
+  margin: var(--sl-space-2) 0;
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-xl);
+  color: var(--sl-cream);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sl-space-2);
+}
+.dates {
+  color: var(--sl-fg-faint);
+  font-size: var(--sl-fs-sm);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sl-space-3);
+  margin-bottom: var(--sl-space-4);
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sl-space-3);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  text-align: center;
+}
+.statValue {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-xl);
+  color: var(--sl-gold);
+  font-variant-numeric: tabular-nums;
+}
+.statLabel {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.prs {
+  margin-top: var(--sl-space-2);
+}
+.prTitle {
+  margin: 0 0 var(--sl-space-2);
+  color: var(--sl-cream);
+  font-size: var(--sl-fs-base);
+}
+.prList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.prList li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sl-space-3);
+  padding: var(--sl-space-2) 0;
+  border-top: 1px solid rgba(212, 161, 90, 0.12);
+}
+.prList li:first-child {
+  border-top: none;
+}
+.prName {
+  color: var(--sl-cream);
+}
+.prVal {
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.prE1rm {
+  color: var(--sl-fg-faint);
+}
+.note {
+  margin: 0;
+  color: var(--sl-fg-faint);
+  font-size: var(--sl-fs-sm);
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

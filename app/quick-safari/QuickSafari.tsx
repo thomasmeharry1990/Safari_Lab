@@ -57,6 +57,7 @@ export function QuickSafari() {
     settings,
     sessionHistory,
     activeQuickSession,
+    otherTabsOpen,
     startQuickSession,
     logQuickSet,
     finishQuickSession,
@@ -174,6 +175,11 @@ export function QuickSafari() {
           <div className={styles.live}>
             <Badge tone="olive">⏱ {fmt(elapsed)}</Badge>
             <Badge tone="gold">{setsLogged}/{target} sets</Badge>
+            {otherTabsOpen ? (
+              <Badge tone="copper" title="Your logs sync automatically across tabs">
+                Open in another tab
+              </Badge>
+            ) : null}
           </div>
         </PageIntro>
         <Shell>

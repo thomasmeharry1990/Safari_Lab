@@ -5,13 +5,29 @@ import { useRouter } from 'next/navigation';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { SessionPlan } from '@/components/program/SessionPlan';
+import { BlockReport } from '@/components/program/BlockReport';
 import { Badge, Button, Card, LinkButton, Section, Shell } from '@/components/ui';
 import styles from './program.module.css';
 
 export function ProgramDashboard() {
-  const { hydrated, activeProgram, endProgram, startDeload, endDeload } = useLocalData();
+  const {
+    hydrated,
+    activeProgram,
+    completedPrograms,
+    endProgram,
+    startDeload,
+    endDeload,
+    startNextBlock,
+  } = useLocalData();
   const router = useRouter();
   const [confirmEnd, setConfirmEnd] = useState(false);
+
+  const lastCompleted =
+    completedPrograms.length > 0
+      ? [...completedPrograms].sort((a, b) =>
+          b.completedAt.localeCompare(a.completedAt)
+        )[0]
+      : undefined;
 
   if (!hydrated) {
     return (
@@ -24,20 +40,47 @@ export function ProgramDashboard() {
       <>
         <PageIntro
           eyebrow="My Program"
-          title="No expedition in progress"
-          lede="Once you lock a program it lives here — your week at a glance, with Today’s Safari ready to train."
+          title={lastCompleted ? 'Ready for your next block' : 'No expedition in progress'}
+          lede={
+            lastCompleted
+              ? 'You finished your last program. Review the block report below, then start a fresh block from the same brief or build something new.'
+              : 'Once you lock a program it lives here — your week at a glance, with Today’s Safari ready to train.'
+          }
         />
         <Shell>
-          <Section tight>
-            <div className={styles.empty}>
-              <LinkButton href="/workout-generator" variant="primary">
-                Build a program
-              </LinkButton>
-              <LinkButton href="/start" variant="secondary">
-                Other ways to start
-              </LinkButton>
-            </div>
-          </Section>
+          {lastCompleted ? (
+            <Section tight>
+              <BlockReport program={lastCompleted} heading="Last expedition complete" />
+              <div className={styles.nextBlock}>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    startNextBlock(lastCompleted);
+                    router.push('/today');
+                  }}
+                >
+                  Start next block
+                </Button>
+                <LinkButton href="/workout-generator" variant="secondary">
+                  Build a new program
+                </LinkButton>
+                <LinkButton href="/progress" variant="ghost">
+                  View progress
+                </LinkButton>
+              </div>
+            </Section>
+          ) : (
+            <Section tight>
+              <div className={styles.empty}>
+                <LinkButton href="/workout-generator" variant="primary">
+                  Build a program
+                </LinkButton>
+                <LinkButton href="/start" variant="secondary">
+                  Other ways to start
+                </LinkButton>
+              </div>
+            </Section>
+          )}
         </Shell>
       </>
     );

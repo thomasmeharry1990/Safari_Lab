@@ -35,6 +35,10 @@
   color: var(--sl-fg-faint);
 }
 
+.favRow {
+  margin-top: var(--sl-space-4);
+}
+
 .body {
   display: grid;
   grid-template-columns: 1.6fr 1fr;

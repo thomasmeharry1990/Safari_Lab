@@ -57,4 +57,21 @@ describe('save file validation', () => {
       expect(r.file.sessionHistory).toEqual([]);
     }
   });
+
+  it('defaults completedPrograms to [] for legacy files without the field', () => {
+    // validRaw has no completedPrograms - a pre-Package-8 export.
+    const r = validateSaveFile(validRaw);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.file.completedPrograms).toEqual([]);
+  });
+
+  it('preserves completedPrograms when present', () => {
+    const withCompleted = {
+      ...validRaw,
+      completedPrograms: [{ id: 'r1', programId: 'p1', name: 'Block 1' }],
+    };
+    const r = validateSaveFile(withCompleted);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.file.completedPrograms).toHaveLength(1);
+  });
 });

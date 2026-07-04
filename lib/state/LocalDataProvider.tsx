@@ -12,24 +12,30 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { SessionLog } from '@/lib/models/session';
 import type { ExpeditionLog, ExpeditionLogTag, ExpeditionMood } from '@/lib/models/expedition';
 import { EXPEDITION_FREE_TEXT_MAX } from '@/lib/models/expedition';
+import type { CompletedProgram } from '@/lib/models/completed-program';
 import type { ActiveProgram, DraftProgram, DraftSession } from '@/lib/engine/types';
 import {
   applySetLog,
+  buildCompletedProgram,
   buildQuickSessionLog,
   buildSessionLog,
   computePRs,
   deloadSessions,
   finalizeSession,
+  generateProgram,
+  isFinalSession,
   toActiveProgram,
   type PRResult,
   type WeightUnit,
 } from '@/lib/engine';
+import { useTabSync } from './useTabSync';
 import {
   addSessionToHistory,
   clearActiveProgram,
@@ -43,10 +49,13 @@ import {
   getActiveProgram,
   getActiveSession,
   getAppMeta,
+  getCompletedPrograms,
   getOverrides,
   getSessionHistory,
   getSettings,
+  addCompletedProgram,
   putOverride,
+  replaceCompletedPrograms,
   replaceHistory,
   replaceOverrides,
   saveActiveProgram,
@@ -64,14 +73,19 @@ interface LocalDataValue {
   activeProgram: ActiveProgram | null;
   activeSession: SessionLog | null;
   sessionHistory: SessionLog[];
+  completedPrograms: CompletedProgram[];
   blockedIds: string[];
   favouriteIds: string[];
+  /** True while Safari Lab is also open in another browser tab. */
+  otherTabsOpen: boolean;
   updateSettings: (patch: Partial<UserSettings>) => void;
   blockExercise: (exerciseId: string) => void;
   unblockExercise: (exerciseId: string) => void;
   toggleFavourite: (exerciseId: string) => void;
   lockProgram: (draft: DraftProgram) => ActiveProgram;
   endProgram: () => void;
+  /** Build + lock a fresh block from a completed program's original brief. */
+  startNextBlock: (completed: CompletedProgram) => void;
   adaptSession: (dayIndex: number, session: DraftSession) => void;
   startDeload: () => void;
   endDeload: () => void;
@@ -81,7 +95,11 @@ interface LocalDataValue {
     setNumber: number,
     input: { weight?: number; reps?: number; rpe?: number; unit: WeightUnit }
   ) => void;
-  finishSession: () => { session: SessionLog; prs: PRResult[] } | null;
+  finishSession: () => {
+    session: SessionLog;
+    prs: PRResult[];
+    completedProgram?: CompletedProgram;
+  } | null;
   abandonSession: () => void;
   activeQuickSession: SessionLog | null;
   startQuickSession: (session: DraftSession) => void;
@@ -116,38 +134,73 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const [activeSession, setActiveSession] = useState<SessionLog | null>(null);
   const [activeQuickSession, setActiveQuickSession] = useState<SessionLog | null>(null);
   const [sessionHistory, setSessionHistory] = useState<SessionLog[]>([]);
+  const [completedPrograms, setCompletedPrograms] = useState<CompletedProgram[]>([]);
+
+  /**
+   * Read every store into state. Used on mount and again whenever another tab
+   * signals a mutation. `remoteApplyRef` marks the resulting state changes as
+   * remote so the broadcasting effect doesn't echo them back and loop.
+   */
+  const remoteApplyRef = useRef(false);
+  const hydrateAll = useCallback(async (markHydrated: boolean, remote = false) => {
+    try {
+      const [s, o, m, p, sess, hist, quick, completed] = await Promise.all([
+        getSettings(),
+        getOverrides(),
+        getAppMeta(),
+        getActiveProgram(),
+        getActiveSession(),
+        getSessionHistory(),
+        getActiveQuickSession(),
+        getCompletedPrograms(),
+      ]);
+      if (remote) remoteApplyRef.current = true;
+      setSettings(s);
+      setOverrides(o);
+      setAppMeta(m);
+      setActiveProgram(p);
+      setActiveSession(sess);
+      setSessionHistory(hist);
+      setActiveQuickSession(quick);
+      setCompletedPrograms(completed);
+    } catch {
+      // IndexedDB unavailable (private mode, blocked) - stay on defaults.
+    } finally {
+      if (markHydrated) setHydrated(true);
+    }
+  }, []);
 
   useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const [s, o, m, p, sess, hist, quick] = await Promise.all([
-          getSettings(),
-          getOverrides(),
-          getAppMeta(),
-          getActiveProgram(),
-          getActiveSession(),
-          getSessionHistory(),
-          getActiveQuickSession(),
-        ]);
-        if (!active) return;
-        setSettings(s);
-        setOverrides(o);
-        setAppMeta(m);
-        setActiveProgram(p);
-        setActiveSession(sess);
-        setSessionHistory(hist);
-        setActiveQuickSession(quick);
-      } catch {
-        // IndexedDB unavailable (private mode, blocked) - stay on defaults.
-      } finally {
-        if (active) setHydrated(true);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
+    void hydrateAll(true);
+  }, [hydrateAll]);
+
+  const { broadcastMutation, otherTabsOpen } = useTabSync(
+    useCallback(() => {
+      void hydrateAll(false, true);
+    }, [hydrateAll])
+  );
+
+  // Tell other tabs whenever local data changes, so they re-hydrate and never
+  // save over data they hadn't seen. Skip changes we just applied FROM a remote
+  // signal (guarded by remoteApplyRef) so tabs don't ping-pong.
+  useEffect(() => {
+    if (!hydrated) return;
+    if (remoteApplyRef.current) {
+      remoteApplyRef.current = false;
+      return;
+    }
+    broadcastMutation();
+  }, [
+    hydrated,
+    settings,
+    overrides,
+    activeProgram,
+    activeSession,
+    activeQuickSession,
+    sessionHistory,
+    completedPrograms,
+    broadcastMutation,
+  ]);
 
   const updateSettings = useCallback((patch: Partial<UserSettings>) => {
     setSettings((prev) => {
@@ -202,6 +255,15 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     void clearActiveProgram();
     void clearActiveSession();
     setActiveProgram(null);
+    setActiveSession(null);
+  }, []);
+
+  const startNextBlock = useCallback((completed: CompletedProgram) => {
+    const draft = generateProgram(completed.input);
+    const program = toActiveProgram(draft, new Date().toISOString());
+    void saveActiveProgram(program);
+    void clearActiveSession();
+    setActiveProgram(program);
     setActiveSession(null);
   }, []);
 
@@ -267,35 +329,55 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const finishSession = useCallback((): {
     session: SessionLog;
     prs: PRResult[];
+    completedProgram?: CompletedProgram;
   } | null => {
     if (!activeSession) return null;
     const finalized = finalizeSession(activeSession);
     const prs = computePRs(finalized, sessionHistory);
+    const fullHistory = [...sessionHistory, finalized];
 
     void addSessionToHistory(finalized);
     void clearActiveSession();
-    setSessionHistory((prev) => [...prev, finalized]);
+    setSessionHistory(fullHistory);
     setActiveSession(null);
 
-    // Advance the program to the next day / week.
+    let completedProgram: CompletedProgram | undefined;
+
     if (activeProgram) {
-      const nextDay = (activeProgram.currentDayIndex + 1) % activeProgram.daysPerWeek;
-      const wrapped = nextDay === 0;
-      const nextWeek = Math.min(
-        activeProgram.weeks,
-        activeProgram.currentWeek + (wrapped ? 1 : 0)
-      );
-      const updated: ActiveProgram = {
-        ...activeProgram,
-        currentDayIndex: nextDay,
-        currentWeek: nextWeek,
-      };
-      void saveActiveProgram(updated);
-      setActiveProgram(updated);
+      if (isFinalSession(activeProgram)) {
+        // Final session of the final week - retire the program into a block report.
+        const unit: WeightUnit = settings.unitSystem === 'imperial' ? 'lb' : 'kg';
+        completedProgram = buildCompletedProgram(
+          activeProgram,
+          fullHistory,
+          unit,
+          new Date().toISOString(),
+          crypto.randomUUID()
+        );
+        void addCompletedProgram(completedProgram);
+        void clearActiveProgram();
+        setCompletedPrograms((prev) => [...prev, completedProgram!]);
+        setActiveProgram(null);
+      } else {
+        // Advance the program to the next day / week.
+        const nextDay = (activeProgram.currentDayIndex + 1) % activeProgram.daysPerWeek;
+        const wrapped = nextDay === 0;
+        const nextWeek = Math.min(
+          activeProgram.weeks,
+          activeProgram.currentWeek + (wrapped ? 1 : 0)
+        );
+        const updated: ActiveProgram = {
+          ...activeProgram,
+          currentDayIndex: nextDay,
+          currentWeek: nextWeek,
+        };
+        void saveActiveProgram(updated);
+        setActiveProgram(updated);
+      }
     }
 
-    return { session: finalized, prs };
-  }, [activeSession, sessionHistory, activeProgram]);
+    return { session: finalized, prs, completedProgram };
+  }, [activeSession, sessionHistory, activeProgram, settings.unitSystem]);
 
   const abandonSession = useCallback(() => {
     void clearActiveSession();
@@ -384,14 +466,24 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeProgram,
       activeSession,
       sessionHistory,
+      completedPrograms,
       migrationHistory: [],
     };
-  }, [appMeta, settings, overrides, activeProgram, activeSession, sessionHistory]);
+  }, [
+    appMeta,
+    settings,
+    overrides,
+    activeProgram,
+    activeSession,
+    sessionHistory,
+    completedPrograms,
+  ]);
 
   const importSaveFile = useCallback(async (file: SlFitSaveFile) => {
     await saveSettings(file.settings);
     await replaceOverrides(file.exerciseOverrides);
     await replaceHistory(file.sessionHistory);
+    await replaceCompletedPrograms(file.completedPrograms ?? []);
     if (file.activeProgram) await saveActiveProgram(file.activeProgram);
     else await clearActiveProgram();
     if (file.activeSession) await saveActiveSession(file.activeSession);
@@ -400,6 +492,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setSettings(file.settings);
     setOverrides(file.exerciseOverrides);
     setSessionHistory(file.sessionHistory);
+    setCompletedPrograms(file.completedPrograms ?? []);
     setActiveProgram(file.activeProgram);
     setActiveSession(file.activeSession);
   }, []);
@@ -412,6 +505,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveSession(null);
     setActiveQuickSession(null);
     setSessionHistory([]);
+    setCompletedPrograms([]);
     setAppMeta(await getAppMeta());
   }, []);
 
@@ -433,14 +527,17 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeProgram,
       activeSession,
       sessionHistory,
+      completedPrograms,
       blockedIds,
       favouriteIds,
+      otherTabsOpen,
       updateSettings,
       blockExercise,
       unblockExercise,
       toggleFavourite,
       lockProgram,
       endProgram,
+      startNextBlock,
       adaptSession,
       startDeload,
       endDeload,
@@ -467,14 +564,17 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeSession,
       activeQuickSession,
       sessionHistory,
+      completedPrograms,
       blockedIds,
       favouriteIds,
+      otherTabsOpen,
       updateSettings,
       blockExercise,
       unblockExercise,
       toggleFavourite,
       lockProgram,
       endProgram,
+      startNextBlock,
       adaptSession,
       startDeload,
       endDeload,

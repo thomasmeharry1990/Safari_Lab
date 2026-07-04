@@ -5,6 +5,11 @@ export { generateProgram } from './generator';
 export { getSwapCandidates, buildSwap } from './swap';
 export { toActiveProgram } from './lock';
 export {
+  isFinalSession,
+  sessionsForProgram,
+  buildCompletedProgram,
+} from './complete';
+export {
   deloadSessions,
   DELOAD_VOLUME_MULTIPLIER,
   DELOAD_INTENSITY_MULTIPLIER,
