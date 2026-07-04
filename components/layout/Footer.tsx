@@ -14,7 +14,8 @@ const EXPLORE_LINKS: { href: string; label: string }[] = [
   { href: '/programs', label: 'Program templates' },
   { href: '/splits/push-pull-legs', label: 'Push / Pull / Legs' },
   { href: '/muscle-groups/glutes', label: 'Glute training' },
-  { href: '/equipment/dumbbells', label: 'Dumbbells only' },
+  { href: '/tools', label: 'Free tools' },
+  { href: '/nutrition', label: 'Nutrition calculators' },
 ];
 
 const TRUST_LINKS: { href: string; label: string }[] = [

@@ -1,0 +1,31 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sl-space-3);
+}
+.macro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sl-space-4);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-md);
+  text-align: center;
+}
+.macroLabel {
+  font-size: var(--sl-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sl-fg-faint);
+}
+.macroG {
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-2xl);
+  color: var(--sl-gold);
+}
+.macroPct {
+  font-size: var(--sl-fs-sm);
+  color: var(--sl-fg-muted);
+}

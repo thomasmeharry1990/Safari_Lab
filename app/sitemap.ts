@@ -19,6 +19,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/muscle-groups',
     '/equipment',
     '/programs',
+    '/tools',
+    '/tools/plate-calculator',
+    '/tools/one-rep-max-calculator',
+    '/nutrition',
+    '/nutrition/tdee-calculator',
+    '/nutrition/macro-splitter',
+    '/nutrition/protein-target',
   ];
   const exercisePaths = getAllExercises().map((e) => `/exercises/${e.slug}`);
   const landingPaths = LANDINGS.map((l) => `${GROUP_META[l.group].path}/${l.slug}`);

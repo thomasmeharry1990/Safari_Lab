@@ -1,0 +1,20 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--sl-space-4);
+  font-variant-numeric: tabular-nums;
+}
+.table th {
+  text-align: left;
+  font-size: var(--sl-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sl-fg-faint);
+  padding: var(--sl-space-2) var(--sl-space-3);
+  border-bottom: 1px solid var(--sl-border);
+}
+.table td {
+  padding: var(--sl-space-2) var(--sl-space-3);
+  color: var(--sl-cream);
+  border-bottom: 1px solid rgba(212, 161, 90, 0.12);
+}
