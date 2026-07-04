@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Badge, Panel, Pill, Section, Shell } from '@/components/ui';
 import { ExerciseCard } from '@/components/exercise/ExerciseCard';
 import { FavouriteButton } from '@/components/exercise/FavouriteButton';
+import { ExerciseHistoryPanel } from '@/components/exercise/ExerciseHistoryPanel';
 import {
   getAllExercises,
   getAlternatives,
@@ -117,6 +118,8 @@ export default function ExerciseDetailPage({
                 </div>
               ))}
             </Panel>
+
+            <ExerciseHistoryPanel exerciseId={ex.id} />
 
             <h2 className={styles.h2}>Form cues</h2>
             <ul className={styles.cues}>

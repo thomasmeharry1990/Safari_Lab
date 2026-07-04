@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { SessionPlan } from '@/components/program/SessionPlan';
+import { SessionEditor } from '@/components/program/SessionEditor';
 import { BlockReport } from '@/components/program/BlockReport';
 import { Badge, Button, Card, LinkButton, Section, Shell } from '@/components/ui';
 import styles from './program.module.css';
@@ -21,6 +22,7 @@ export function ProgramDashboard() {
   } = useLocalData();
   const router = useRouter();
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   const lastCompleted =
     completedPrograms.length > 0
@@ -135,11 +137,29 @@ export function ProgramDashboard() {
         ) : null}
 
         <Section tight>
-          <h2 className={styles.h2}>Your training week</h2>
+          <div className={styles.weekHead}>
+            <h2 className={styles.h2}>Your training week</h2>
+            <Button
+              variant={reordering ? 'primary' : 'secondary'}
+              onClick={() => setReordering((v) => !v)}
+            >
+              {reordering ? 'Done reordering' : 'Reorder exercises'}
+            </Button>
+          </div>
+          {reordering ? (
+            <p className={styles.reorderHint}>
+              Use the ▲▼ controls to change the order exercises appear in each
+              session. Changes save instantly.
+            </p>
+          ) : null}
           <div className={styles.week}>
-            {p.sessions.map((s) => (
-              <SessionPlan key={s.id} session={s} />
-            ))}
+            {p.sessions.map((s, i) =>
+              reordering ? (
+                <SessionEditor key={s.id} session={s} dayIndex={i} />
+              ) : (
+                <SessionPlan key={s.id} session={s} />
+              )
+            )}
           </div>
         </Section>
 

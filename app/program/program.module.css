@@ -44,7 +44,8 @@
   margin: 0 0 var(--sl-space-2);
 }
 
-.todayHead {
+.todayHead,
+.weekHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -52,7 +53,13 @@
   gap: var(--sl-space-3);
   margin-bottom: var(--sl-space-3);
 }
-.todayHead .h2 {
+.reorderHint {
+  margin: 0 0 var(--sl-space-3);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+}
+.todayHead .h2,
+.weekHead .h2 {
   margin-bottom: 0;
 }
 

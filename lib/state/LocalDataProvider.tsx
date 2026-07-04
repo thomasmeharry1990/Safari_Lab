@@ -31,6 +31,7 @@ import {
   finalizeSession,
   generateProgram,
   isFinalSession,
+  moveItem,
   toActiveProgram,
   type PRResult,
   type WeightUnit,
@@ -86,6 +87,8 @@ interface LocalDataValue {
   endProgram: () => void;
   /** Build + lock a fresh block from a completed program's original brief. */
   startNextBlock: (completed: CompletedProgram) => void;
+  /** Move an exercise within a session's order (dir: -1 up, +1 down). */
+  moveExerciseInSession: (dayIndex: number, index: number, dir: -1 | 1) => void;
   adaptSession: (dayIndex: number, session: DraftSession) => void;
   startDeload: () => void;
   endDeload: () => void;
@@ -266,6 +269,33 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveProgram(program);
     setActiveSession(null);
   }, []);
+
+  const moveExerciseInSession = useCallback(
+    (dayIndex: number, index: number, dir: -1 | 1) => {
+      setActiveProgram((prev) => {
+        if (!prev) return prev;
+        const session = prev.sessions[dayIndex];
+        if (!session) return prev;
+        const reordered = moveItem(session.exercises, index, dir);
+        if (reordered === session.exercises) return prev; // out-of-range no-op
+        const sessions = prev.sessions.map((s, i) =>
+          i === dayIndex ? { ...s, exercises: reordered } : s
+        );
+        // Keep the pre-deload original in sync so ending a deload preserves order.
+        let deload = prev.deload;
+        if (deload?.active) {
+          const orig = deload.original.map((s, i) =>
+            i === dayIndex ? { ...s, exercises: moveItem(s.exercises, index, dir) } : s
+          );
+          deload = { ...deload, original: orig };
+        }
+        const next: ActiveProgram = { ...prev, sessions, deload };
+        void saveActiveProgram(next);
+        return next;
+      });
+    },
+    []
+  );
 
   const adaptSession = useCallback((dayIndex: number, session: DraftSession) => {
     setActiveProgram((prev) => {
@@ -538,6 +568,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       lockProgram,
       endProgram,
       startNextBlock,
+      moveExerciseInSession,
       adaptSession,
       startDeload,
       endDeload,
@@ -575,6 +606,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       lockProgram,
       endProgram,
       startNextBlock,
+      moveExerciseInSession,
       adaptSession,
       startDeload,
       endDeload,
