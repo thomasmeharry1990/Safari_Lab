@@ -12,6 +12,7 @@ export const SITE_NAME = 'Safari Lab';
 export const NOINDEX_PREFIXES = [
   '/start',
   '/workout-generator',
+  '/quick-safari',
   '/program',
   '/today',
   '/progress',

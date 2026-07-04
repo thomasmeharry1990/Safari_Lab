@@ -9,20 +9,11 @@ import type {
   SessionLog,
   SetLog,
 } from '@/lib/models/session';
-import type { ActiveProgram } from './types';
+import type { ActiveProgram, DraftSession } from './types';
 
-export type WeightUnit = 'kg' | 'lb';
-
-/** Build a fresh in-progress SessionLog from a planned session in the program. */
-export function buildSessionLog(
-  program: ActiveProgram,
-  dayIndex: number
-): SessionLog {
-  const session = program.sessions[dayIndex];
-  if (!session) throw new Error(`No session at day ${dayIndex}`);
-  const id = crypto.randomUUID();
-
-  const exerciseBlocks: SessionExerciseBlock[] = session.exercises.map((ex, i) => ({
+/** Build exercise blocks from a planned session's exercises. */
+function blocksFor(session: DraftSession): SessionExerciseBlock[] {
+  return session.exercises.map((ex, i) => ({
     id: crypto.randomUUID(),
     plannedExerciseId: ex.exerciseId,
     currentExerciseId: ex.exerciseId,
@@ -34,15 +25,41 @@ export function buildSessionLog(
     setLogIds: [],
     swapEventIds: [],
   }));
+}
+
+/** Build a fresh in-progress SessionLog for a standalone Quick Safari session. */
+export function buildQuickSessionLog(session: DraftSession): SessionLog {
+  return {
+    id: crypto.randomUUID(),
+    quickSafariId: session.id,
+    plannedWorkoutId: session.id,
+    status: 'inProgress',
+    startedAt: new Date().toISOString(),
+    exerciseBlocks: blocksFor(session),
+    setLogs: [],
+    swapEvents: [],
+    adaptationEvents: [],
+  };
+}
+
+export type WeightUnit = 'kg' | 'lb';
+
+/** Build a fresh in-progress SessionLog from a planned session in the program. */
+export function buildSessionLog(
+  program: ActiveProgram,
+  dayIndex: number
+): SessionLog {
+  const session = program.sessions[dayIndex];
+  if (!session) throw new Error(`No session at day ${dayIndex}`);
 
   return {
-    id,
+    id: crypto.randomUUID(),
     programBlockId: program.programId,
     weekNumber: program.currentWeek,
     plannedWorkoutId: session.id,
     status: 'inProgress',
     startedAt: new Date().toISOString(),
-    exerciseBlocks,
+    exerciseBlocks: blocksFor(session),
     setLogs: [],
     swapEvents: [],
     adaptationEvents: [],

@@ -141,6 +141,27 @@ export async function replaceHistory(list: SessionLog[]): Promise<void> {
   await Promise.all(list.map((s) => idbPut(DB_STORES.sessionHistory, s)));
 }
 
+// --- Active Quick Safari session (standalone, separate from a program) ---
+
+interface StoredQuickSession {
+  id: 'active-quick';
+  session: SessionLog;
+}
+
+export async function getActiveQuickSession(): Promise<SessionLog | null> {
+  if (!isBrowserDbAvailable()) return null;
+  const stored = await idbGet<StoredQuickSession>(DB_STORES.quickSafaris, 'active-quick');
+  return stored?.session ?? null;
+}
+
+export async function saveActiveQuickSession(session: SessionLog): Promise<void> {
+  await idbPut<StoredQuickSession>(DB_STORES.quickSafaris, { id: 'active-quick', session });
+}
+
+export async function clearActiveQuickSession(): Promise<void> {
+  await idbDelete(DB_STORES.quickSafaris, 'active-quick');
+}
+
 /** Wipe all local data (settings, overrides, programs, sessions, everything). */
 export async function clearAllData(): Promise<void> {
   await idbClearAll();

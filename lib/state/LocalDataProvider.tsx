@@ -19,6 +19,7 @@ import type { SessionLog } from '@/lib/models/session';
 import type { ActiveProgram, DraftProgram, DraftSession } from '@/lib/engine/types';
 import {
   applySetLog,
+  buildQuickSessionLog,
   buildSessionLog,
   computePRs,
   finalizeSession,
@@ -29,8 +30,11 @@ import {
 import {
   addSessionToHistory,
   clearActiveProgram,
+  clearActiveQuickSession,
   clearActiveSession,
   clearAllData,
+  getActiveQuickSession,
+  saveActiveQuickSession,
   DEFAULT_SETTINGS,
   deleteOverride,
   getActiveProgram,
@@ -74,6 +78,15 @@ interface LocalDataValue {
   ) => void;
   finishSession: () => { session: SessionLog; prs: PRResult[] } | null;
   abandonSession: () => void;
+  activeQuickSession: SessionLog | null;
+  startQuickSession: (session: DraftSession) => void;
+  logQuickSet: (
+    blockId: string,
+    setNumber: number,
+    input: { weight?: number; reps?: number; unit: WeightUnit }
+  ) => void;
+  finishQuickSession: () => { session: SessionLog; prs: PRResult[] } | null;
+  abandonQuickSession: () => void;
   exportSaveFile: () => SlFitSaveFile;
   importSaveFile: (file: SlFitSaveFile) => Promise<void>;
   clearAll: () => Promise<void>;
@@ -92,19 +105,21 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const [appMeta, setAppMeta] = useState<AppMeta | null>(null);
   const [activeProgram, setActiveProgram] = useState<ActiveProgram | null>(null);
   const [activeSession, setActiveSession] = useState<SessionLog | null>(null);
+  const [activeQuickSession, setActiveQuickSession] = useState<SessionLog | null>(null);
   const [sessionHistory, setSessionHistory] = useState<SessionLog[]>([]);
 
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const [s, o, m, p, sess, hist] = await Promise.all([
+        const [s, o, m, p, sess, hist, quick] = await Promise.all([
           getSettings(),
           getOverrides(),
           getAppMeta(),
           getActiveProgram(),
           getActiveSession(),
           getSessionHistory(),
+          getActiveQuickSession(),
         ]);
         if (!active) return;
         setSettings(s);
@@ -113,6 +128,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
         setActiveProgram(p);
         setActiveSession(sess);
         setSessionHistory(hist);
+        setActiveQuickSession(quick);
       } catch {
         // IndexedDB unavailable (private mode, blocked) - stay on defaults.
       } finally {
@@ -254,6 +270,47 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveSession(null);
   }, []);
 
+  const startQuickSession = useCallback((session: DraftSession) => {
+    const log = buildQuickSessionLog(session);
+    void saveActiveQuickSession(log);
+    setActiveQuickSession(log);
+  }, []);
+
+  const logQuickSet = useCallback(
+    (
+      blockId: string,
+      setNumber: number,
+      input: { weight?: number; reps?: number; unit: WeightUnit }
+    ) => {
+      setActiveQuickSession((prev) => {
+        if (!prev) return prev;
+        const next = applySetLog(prev, blockId, setNumber, input);
+        void saveActiveQuickSession(next);
+        return next;
+      });
+    },
+    []
+  );
+
+  const finishQuickSession = useCallback((): {
+    session: SessionLog;
+    prs: PRResult[];
+  } | null => {
+    if (!activeQuickSession) return null;
+    const finalized = finalizeSession(activeQuickSession);
+    const prs = computePRs(finalized, sessionHistory);
+    void addSessionToHistory(finalized);
+    void clearActiveQuickSession();
+    setSessionHistory((prev) => [...prev, finalized]);
+    setActiveQuickSession(null);
+    return { session: finalized, prs };
+  }, [activeQuickSession, sessionHistory]);
+
+  const abandonQuickSession = useCallback(() => {
+    void clearActiveQuickSession();
+    setActiveQuickSession(null);
+  }, []);
+
   const exportSaveFile = useCallback((): SlFitSaveFile => {
     return {
       app: 'SafariLab',
@@ -292,6 +349,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setOverrides([]);
     setActiveProgram(null);
     setActiveSession(null);
+    setActiveQuickSession(null);
     setSessionHistory([]);
     setAppMeta(await getAppMeta());
   }, []);
@@ -327,6 +385,11 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logSet,
       finishSession,
       abandonSession,
+      activeQuickSession,
+      startQuickSession,
+      logQuickSet,
+      finishQuickSession,
+      abandonQuickSession,
       exportSaveFile,
       importSaveFile,
       clearAll,
@@ -338,6 +401,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       appMeta,
       activeProgram,
       activeSession,
+      activeQuickSession,
       sessionHistory,
       blockedIds,
       favouriteIds,
@@ -352,6 +416,10 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logSet,
       finishSession,
       abandonSession,
+      startQuickSession,
+      logQuickSet,
+      finishQuickSession,
+      abandonQuickSession,
       exportSaveFile,
       importSaveFile,
       clearAll,

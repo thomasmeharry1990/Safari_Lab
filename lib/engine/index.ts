@@ -4,8 +4,10 @@ export { chooseSplit, SESSION_FOCUS } from './split';
 export { generateProgram } from './generator';
 export { getSwapCandidates, buildSwap } from './swap';
 export { toActiveProgram } from './lock';
+export { generateQuickSession, type QuickInput } from './quick';
 export {
   buildSessionLog,
+  buildQuickSessionLog,
   applySetLog,
   finalizeSession,
   totalSetsLogged,

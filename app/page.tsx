@@ -275,7 +275,7 @@ export default function HomePage() {
                 time.
               </p>
             </div>
-            <LinkButton href="/start" variant="primary">
+            <LinkButton href="/quick-safari" variant="primary">
               {COPY.quickSafari}
             </LinkButton>
           </Card>

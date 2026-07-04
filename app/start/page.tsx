@@ -33,11 +33,15 @@ const ROUTES: {
     title: 'Quick Safari',
     body: 'One-off session built for the time and equipment you have right now — no program required.',
     Icon: IconShuffle,
+    href: '/quick-safari',
+    cta: 'Start a Quick Safari',
   },
   {
     title: 'Import a save file',
     body: 'Already have a .slfit file? Bring your programs, history and progress onto this device.',
     Icon: IconDownload,
+    href: '/backup',
+    cta: 'Import a save file',
   },
 ];
 
@@ -79,9 +83,8 @@ export default function StartPage() {
             ))}
           </Grid>
           <p className={styles.note}>
-            The program generator is live. Gym-mode logging and save-file import
-            arrive in later build stages — this page will wire up to them as they
-            land.
+            Everything runs in your browser and stays on your device — no account,
+            no uploads. Not sure? A Quick Safari is the fastest way to try it.
           </p>
         </Section>
       </Shell>
