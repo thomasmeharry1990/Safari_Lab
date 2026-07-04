@@ -79,6 +79,28 @@ a:hover {
   color: var(--sl-gold-strong);
 }
 
+/* Skip-to-content link: hidden until keyboard-focused. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--sl-space-3);
+  z-index: var(--sl-z-toast);
+  padding: var(--sl-space-3) var(--sl-space-4);
+  background-color: var(--sl-gold);
+  color: var(--sl-on-gold);
+  border-radius: var(--sl-radius-md);
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  transition: top var(--sl-motion-fast) var(--sl-ease);
+}
+.skip-link:focus {
+  top: var(--sl-space-3);
+  color: var(--sl-on-gold);
+}
+#main-content:focus {
+  outline: none;
+}
+
 /* Accessible focus ring across all interactive elements. */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--sl-focus-ring);
