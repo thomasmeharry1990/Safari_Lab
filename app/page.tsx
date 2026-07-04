@@ -2,16 +2,19 @@ import type { ComponentType } from 'react';
 import { Badge, Card, Grid, LinkButton, Pill, Section, Shell } from '@/components/ui';
 import {
   IconBarbell,
+  IconCheck,
   IconCompass,
   IconDumbbell,
   IconProgress,
   IconShield,
   IconShuffle,
+  IconTarget,
   type IconProps,
 } from '@/components/brand/Icons';
 import { AdSlot } from '@/components/ads/AdSlot';
+import { Scene } from '@/components/media/Scene';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
+import { BRAND_EXPEDITION_LINE, BRAND_TAGLINE, COPY } from '@/lib/constants/brand';
 import { DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
 import { SITE_NAME, SITE_URL } from '@/lib/constants/site';
 import styles from './home.module.css';
@@ -85,27 +88,38 @@ const FEATURES: { title: string; body: string; Icon: ComponentType<IconProps> }[
     },
   ];
 
-const STEPS: { n: string; title: string; body: string }[] = [
+const STEPS: { n: string; title: string; body: string; Icon: ComponentType<IconProps> }[] = [
   {
     n: '01',
     title: 'Set your goals',
     body: 'Pick a goal, experience level, training days and the muscles you want to prioritise.',
+    Icon: IconTarget,
   },
   {
     n: '02',
     title: 'Generate your plan',
     body: 'Get a balanced multi-week block. Review it, swap exercises, then lock it in.',
+    Icon: IconShuffle,
   },
   {
     n: '03',
     title: 'Train and log',
     body: 'Open Today’s Safari at the gym. Log sets one-handed with rest timers and PR alerts.',
+    Icon: IconBarbell,
   },
   {
     n: '04',
     title: 'Adapt and progress',
     body: 'Safari Lab recommends next loads and reshapes the plan around missed or hard sessions.',
+    Icon: IconProgress,
   },
+];
+
+const EXPEDITION_POINTS = [
+  'Never the same workout twice',
+  'Balanced, recovery-safe programming',
+  'Exercises you know and can progress',
+  'Adapts around missed and hard sessions',
 ];
 
 export default function HomePage() {
@@ -136,8 +150,9 @@ export default function HomePage() {
             <p className={styles.heroTagline}>{BRAND_TAGLINE}</p>
           </div>
 
-          {/* Preview card - illustrative, not a real session */}
-          <div className={styles.heroPreview} aria-hidden="true">
+          {/* Preview card over a placeholder brand scene (swap for a photo later) */}
+          <div className={styles.heroPreview}>
+            <Scene name="savanna" slot="home-hero" className={styles.heroScene} />
             <Card className={styles.previewCard}>
               <div className={styles.previewHead}>
                 <span className={styles.previewLabel}>{COPY.todaysSafari}</span>
@@ -213,12 +228,40 @@ export default function HomePage() {
           <Grid cols={4}>
             {STEPS.map((s) => (
               <div key={s.n} className={styles.step}>
+                <span className={styles.stepBadge} aria-hidden="true">
+                  <s.Icon size={22} />
+                </span>
                 <span className={styles.stepNum}>{s.n}</span>
                 <h3 className={styles.stepTitle}>{s.title}</h3>
                 <p className={styles.featureBody}>{s.body}</p>
               </div>
             ))}
           </Grid>
+        </Section>
+
+        {/* --- Expedition section (placeholder scene, swap for a photo later) --- */}
+        <Section>
+          <div className={styles.expedition}>
+            <div className={styles.expeditionCopy}>
+              <span className={styles.eyebrow}>Every workout is a new expedition</span>
+              <h2 className={styles.sectionTitle}>{BRAND_EXPEDITION_LINE}</h2>
+              <p className={styles.sectionLede}>
+                From strength to hypertrophy, Safari Lab keeps your training
+                challenging, balanced and progressing — session after session.
+              </p>
+              <ul className={styles.checklist}>
+                {EXPEDITION_POINTS.map((p) => (
+                  <li key={p}>
+                    <span className={styles.checkIcon} aria-hidden="true">
+                      <IconCheck size={16} />
+                    </span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Scene name="savanna" slot="home-expedition" className={styles.expeditionScene} />
+          </div>
         </Section>
 
         {/* --- Quick Safari band --- */}

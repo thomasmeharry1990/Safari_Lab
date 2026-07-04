@@ -1,4 +1,12 @@
 import type { Metadata, Viewport } from 'next';
+// Self-hosted brand fonts - woff2 vendored + bundled at build (no CDN, no
+// build-time network). Raleway (display) + Montserrat (body).
+import '@fontsource/raleway/600.css';
+import '@fontsource/raleway/700.css';
+import '@fontsource/raleway/800.css';
+import '@fontsource/montserrat/400.css';
+import '@fontsource/montserrat/500.css';
+import '@fontsource/montserrat/600.css';
 import { APP_DISPLAY_NAME, DOCTRINE_STATEMENT } from '@/lib/constants/doctrine';
 import { BRAND_COLORS } from '@/lib/constants/brand';
 import { SITE_NAME, SITE_URL } from '@/lib/constants/site';
@@ -31,10 +39,20 @@ export const metadata: Metadata = {
     title: `${APP_DISPLAY_NAME} - Free Adaptive Workout Planner`,
     description: DOCTRINE_STATEMENT,
     url: SITE_URL,
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${APP_DISPLAY_NAME} - Free Adaptive Workout Planner`,
+    description: DOCTRINE_STATEMENT,
+    images: ['/og.png'],
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
   appleWebApp: {
     capable: true,

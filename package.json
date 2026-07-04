@@ -9,9 +9,12 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "assets": "node scripts/gen-assets.mjs"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.2.8",
+    "@fontsource/raleway": "^5.2.8",
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -22,6 +25,7 @@
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.15",
+    "sharp": "^0.35.3",
     "typescript": "^5.5.4",
     "vitest": "^2.1.9"
   }

@@ -40,8 +40,21 @@
 
 /* --- Hero preview card --- */
 .heroPreview {
+  position: relative;
   display: flex;
+  align-items: center;
   justify-content: center;
+  min-height: 400px;
+  padding: var(--sl-space-5);
+}
+.heroScene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.heroPreview .previewCard {
+  position: relative;
+  z-index: 1;
 }
 .previewCard {
   width: 100%;
@@ -154,16 +167,74 @@
   padding: var(--sl-space-4);
   border-left: 2px solid var(--sl-border);
 }
+.stepBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(212, 161, 90, 0.14);
+  border: 1px solid var(--sl-border);
+  color: var(--sl-gold);
+  margin-bottom: var(--sl-space-2);
+}
 .stepNum {
+  display: block;
   font-family: var(--sl-font-display);
   font-weight: var(--sl-fw-extrabold);
-  font-size: var(--sl-fs-xl);
-  color: var(--sl-gold);
+  font-size: var(--sl-fs-lg);
+  color: var(--sl-muted-gold);
 }
 .stepTitle {
   font-size: var(--sl-fs-lg);
   color: var(--sl-cream);
   margin: var(--sl-space-2) 0 var(--sl-space-2);
+}
+
+/* --- Expedition section --- */
+.expedition {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sl-space-6);
+  align-items: center;
+}
+.eyebrow {
+  display: block;
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-semibold);
+  font-size: var(--sl-fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sl-muted-gold);
+  margin-bottom: var(--sl-space-2);
+}
+.checklist {
+  list-style: none;
+  margin: var(--sl-space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sl-space-3);
+}
+.checklist li {
+  display: flex;
+  align-items: center;
+  gap: var(--sl-space-3);
+  color: var(--sl-cream);
+}
+.checkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: rgba(212, 161, 90, 0.16);
+  color: var(--sl-gold);
+  flex-shrink: 0;
+}
+.expeditionScene {
+  min-height: 340px;
 }
 
 /* --- Quick Safari band --- */
@@ -196,9 +267,18 @@
   }
   .heroPreview {
     order: 2;
+    min-height: 0;
+    padding: var(--sl-space-4);
   }
   .heroTitle {
     font-size: var(--sl-fs-3xl);
+  }
+  .expedition {
+    grid-template-columns: 1fr;
+  }
+  .expeditionScene {
+    order: -1;
+    min-height: 220px;
   }
   .band {
     flex-direction: column;
