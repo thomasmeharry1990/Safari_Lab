@@ -10,6 +10,7 @@ import { PageIntro } from '@/components/layout/PageIntro';
 import { SessionPlan } from '@/components/program/SessionPlan';
 import { Badge, Button, LinkButton, Section, Shell } from '@/components/ui';
 import { ExerciseLogger } from './ExerciseLogger';
+import { ExpeditionLogForm } from './ExpeditionLogForm';
 import { RestTimer } from './RestTimer';
 import { AdaptPanel } from './AdaptPanel';
 import { AdSlot } from '@/components/ads/AdSlot';
@@ -64,13 +65,14 @@ export function GymMode() {
   }, []);
 
   const loggedByBlock = useMemo(() => {
-    const map = new Map<string, Map<number, { weight?: number; reps?: number }>>();
+    const map = new Map<string, Map<number, { weight?: number; reps?: number; rpe?: number }>>();
     if (!activeSession) return map;
     for (const set of activeSession.setLogs) {
       if (!map.has(set.sessionExerciseBlockId)) map.set(set.sessionExerciseBlockId, new Map());
       map.get(set.sessionExerciseBlockId)!.set(set.setNumber, {
         weight: set.weight,
         reps: set.reps,
+        rpe: set.rpe,
       });
     }
     return map;
@@ -114,6 +116,7 @@ export function GymMode() {
                   chips will guide your next session.
                 </p>
               )}
+              <ExpeditionLogForm sessionId={session.id} />
               <div className={styles.completeActions}>
                 <LinkButton href="/program" variant="primary">
                   Back to program
@@ -173,8 +176,8 @@ export function GymMode() {
                       : undefined
                   }
                   logged={loggedByBlock.get(block.id) ?? new Map()}
-                  onLog={(setNumber, weight, reps) => {
-                    logSet(block.id, setNumber, { weight, reps, unit });
+                  onLog={(setNumber, weight, reps, rpe) => {
+                    logSet(block.id, setNumber, { weight, reps, rpe, unit });
                     setRest({ timerId: Date.now(), seconds: block.targetRestSeconds });
                   }}
                 />

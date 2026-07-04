@@ -3,6 +3,9 @@
 import { useMemo, useState } from 'react';
 import { useLocalData } from '@/lib/state/LocalDataProvider';
 import { computeProgress } from '@/lib/engine';
+import type { SessionLog } from '@/lib/models/session';
+import type { ExpeditionMood } from '@/lib/models/expedition';
+import { getExerciseById } from '@/lib/data/exercises';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { LineChart } from '@/components/charts/LineChart';
 import { BarChart } from '@/components/charts/BarChart';
@@ -16,6 +19,11 @@ export function ProgressDashboard() {
     () => computeProgress(sessionHistory, new Date()),
     [sessionHistory]
   );
+  const historyById = useMemo(() => {
+    const m = new Map<string, SessionLog>();
+    for (const s of sessionHistory) m.set(s.id, s);
+    return m;
+  }, [sessionHistory]);
   const [strengthId, setStrengthId] = useState<string | null>(null);
 
   if (!hydrated) {
@@ -153,11 +161,21 @@ export function ProgressDashboard() {
             <ul className={styles.recent}>
               {stats.recent.slice(0, 8).map((r) => (
                 <li key={r.id} className={styles.recentRow}>
-                  <span>{new Date(r.at).toLocaleDateString()}</span>
-                  <span className={styles.recentSets}>{r.sets} sets</span>
-                  <span className={styles.recentVol}>
-                    {r.volume.toLocaleString()} {stats.unit}
-                  </span>
+                  <details>
+                    <summary className={styles.recentSummary}>
+                      <span className={styles.recentCaret} aria-hidden>
+                        ▶
+                      </span>
+                      <span className={styles.recentDate}>
+                        {new Date(r.at).toLocaleDateString()}
+                      </span>
+                      <span className={styles.recentSets}>{r.sets} sets</span>
+                      <span className={styles.recentVol}>
+                        {r.volume.toLocaleString()} {stats.unit}
+                      </span>
+                    </summary>
+                    <SessionDetail session={historyById.get(r.id)} />
+                  </details>
                 </li>
               ))}
             </ul>
@@ -173,6 +191,72 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className={styles.stat}>
       <span className={styles.statValue}>{value}</span>
       <span className={styles.statLabel}>{label}</span>
+    </div>
+  );
+}
+
+const MOOD_LABEL: Record<ExpeditionMood, string> = {
+  strong: '💪 Strong',
+  energised: '⚡ Energised',
+  normal: '🙂 Normal',
+  tired: '😮‍💨 Tired',
+  sore: '🩹 Sore',
+  stressed: '😣 Stressed',
+};
+
+function SessionDetail({ session }: { session: SessionLog | undefined }) {
+  if (!session) return null;
+  const log = session.expeditionLog;
+  const blocks = session.exerciseBlocks.filter((b) =>
+    session.setLogs.some((s) => s.sessionExerciseBlockId === b.id)
+  );
+
+  return (
+    <div className={styles.recentDetail}>
+      {blocks.length ? (
+        blocks.map((b) => {
+          const ex = getExerciseById(b.currentExerciseId);
+          const sets = session.setLogs
+            .filter((s) => s.sessionExerciseBlockId === b.id)
+            .sort((a, c) => a.setNumber - c.setNumber);
+          return (
+            <div key={b.id} className={styles.detailEx}>
+              <span className={styles.detailExName}>
+                {ex?.name ?? b.currentExerciseId}
+              </span>
+              <div className={styles.detailSets}>
+                {sets.map((s) => (
+                  <span key={s.id} className={styles.detailSet}>
+                    {s.weight != null ? `${s.weight}${s.unit} × ` : ''}
+                    {s.reps ?? '—'}
+                    {s.rpe != null ? (
+                      <span className={styles.detailRpe}> @{s.rpe}</span>
+                    ) : null}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })
+      ) : (
+        <span className={styles.detailEmpty}>No sets logged.</span>
+      )}
+
+      {log && (log.mood || log.tags.length || log.freeText) ? (
+        <div className={styles.detailLog}>
+          <div className={styles.detailLogHead}>
+            {log.mood ? (
+              <span className={styles.detailMood}>{MOOD_LABEL[log.mood]}</span>
+            ) : null}
+            {log.tags.map((t) => (
+              <span key={t} className={styles.detailTag}>
+                {t}
+              </span>
+            ))}
+          </div>
+          {log.freeText ? <p className={styles.detailNote}>{log.freeText}</p> : null}
+        </div>
+      ) : null}
     </div>
   );
 }

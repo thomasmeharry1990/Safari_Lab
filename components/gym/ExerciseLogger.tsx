@@ -11,6 +11,7 @@ import styles from './gym.module.css';
 interface LoggedSet {
   weight?: number;
   reps?: number;
+  rpe?: number;
 }
 
 export function ExerciseLogger({
@@ -26,7 +27,12 @@ export function ExerciseLogger({
   stat: ExerciseHistoryStat;
   rec?: ProgressionRec;
   logged: Map<number, LoggedSet>;
-  onLog: (setNumber: number, weight: number | undefined, reps: number | undefined) => void;
+  onLog: (
+    setNumber: number,
+    weight: number | undefined,
+    reps: number | undefined,
+    rpe: number | undefined
+  ) => void;
 }) {
   const ex = getExerciseById(block.currentExerciseId);
   const isCardio = ex?.primaryMuscle === 'cardio';
@@ -45,12 +51,15 @@ export function ExerciseLogger({
         ? String(stat.last.reps)
         : String(block.targetRepRange[1]);
 
-  const [inputs, setInputs] = useState<{ weight: string; reps: string }[]>(() =>
+  const [inputs, setInputs] = useState<
+    { weight: string; reps: string; rpe: string }[]
+  >(() =>
     Array.from({ length: block.targetSets }, (_, i) => {
       const done = logged.get(i + 1);
       return {
         weight: done?.weight != null ? String(done.weight) : prefillWeight,
         reps: done?.reps != null ? String(done.reps) : prefillReps,
+        rpe: done?.rpe != null ? String(done.rpe) : '',
       };
     })
   );
@@ -66,7 +75,7 @@ export function ExerciseLogger({
       }))
     : [];
 
-  function update(idx: number, field: 'weight' | 'reps', value: string) {
+  function update(idx: number, field: 'weight' | 'reps' | 'rpe', value: string) {
     setInputs((prev) => prev.map((r, i) => (i === idx ? { ...r, [field]: value } : r)));
   }
 
@@ -75,7 +84,8 @@ export function ExerciseLogger({
     if (!row) return;
     const weight = row.weight === '' ? undefined : Number(row.weight);
     const reps = row.reps === '' ? undefined : Number(row.reps);
-    onLog(setNumber, weight, reps);
+    const rpe = row.rpe === '' ? undefined : Number(row.rpe);
+    onLog(setNumber, weight, reps, rpe);
   }
 
   const targetText = isCardio
@@ -185,6 +195,22 @@ export function ExerciseLogger({
                 />
                 <span className={styles.setUnit}>{isCardio ? 'min' : 'reps'}</span>
               </span>
+              {!isCardio ? (
+                <span className={styles.rpeField}>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    min={1}
+                    max={10}
+                    step={0.5}
+                    value={row.rpe}
+                    onChange={(e) => update(i, 'rpe', e.target.value)}
+                    aria-label={`Set ${setNumber} RPE (effort 1–10, optional)`}
+                    placeholder="RPE"
+                    title="Rate of Perceived Exertion (1–10) — optional"
+                  />
+                </span>
+              ) : null}
               <button
                 type="button"
                 className={done ? styles.setBtnDone : styles.setBtn}

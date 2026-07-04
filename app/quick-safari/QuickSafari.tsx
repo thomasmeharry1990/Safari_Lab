@@ -17,6 +17,7 @@ import { useLocalData } from '@/lib/state/LocalDataProvider';
 import { PageIntro } from '@/components/layout/PageIntro';
 import { SessionPlan } from '@/components/program/SessionPlan';
 import { ExerciseLogger } from '@/components/gym/ExerciseLogger';
+import { ExpeditionLogForm } from '@/components/gym/ExpeditionLogForm';
 import { RestTimer } from '@/components/gym/RestTimer';
 import { Scene } from '@/components/media/Scene';
 import { Badge, Button, LinkButton, Section, Shell } from '@/components/ui';
@@ -81,11 +82,15 @@ export function QuickSafari() {
   }, [activeQuickSession]);
 
   const loggedByBlock = useMemo(() => {
-    const map = new Map<string, Map<number, { weight?: number; reps?: number }>>();
+    const map = new Map<string, Map<number, { weight?: number; reps?: number; rpe?: number }>>();
     if (!activeQuickSession) return map;
     for (const s of activeQuickSession.setLogs) {
       if (!map.has(s.sessionExerciseBlockId)) map.set(s.sessionExerciseBlockId, new Map());
-      map.get(s.sessionExerciseBlockId)!.set(s.setNumber, { weight: s.weight, reps: s.reps });
+      map.get(s.sessionExerciseBlockId)!.set(s.setNumber, {
+        weight: s.weight,
+        reps: s.reps,
+        rpe: s.rpe,
+      });
     }
     return map;
   }, [activeQuickSession]);
@@ -140,6 +145,7 @@ export function QuickSafari() {
             <p className={styles.note}>
               Logged to your history — it counts toward your progress and records.
             </p>
+            <ExpeditionLogForm sessionId={session.id} />
             <div className={styles.row}>
               <LinkButton href={prefillHref} variant="primary">
                 Make it a full program
@@ -182,8 +188,8 @@ export function QuickSafari() {
                   stat={lastAndBest(sessionHistory, block.currentExerciseId)}
                   rec={ex ? recommendNext(ex, block.targetRepRange, sessionHistory, unit) : undefined}
                   logged={loggedByBlock.get(block.id) ?? new Map()}
-                  onLog={(setNumber, weight, reps) => {
-                    logQuickSet(block.id, setNumber, { weight, reps, unit });
+                  onLog={(setNumber, weight, reps, rpe) => {
+                    logQuickSet(block.id, setNumber, { weight, reps, rpe, unit });
                     setRest({ timerId: Date.now(), seconds: block.targetRestSeconds });
                   }}
                 />

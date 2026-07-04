@@ -105,4 +105,6 @@ export interface SessionLog {
   swapEvents: ExerciseSwapEvent[]; // embedded here; no separate store
   adaptationEvents: AdaptationEvent[];
   expeditionLogId?: string;
+  /** Embedded expedition log (mood/tags/notes) captured on completion. */
+  expeditionLog?: import('./expedition').ExpeditionLog;
 }

@@ -267,6 +267,22 @@
   color: var(--sl-fg-faint);
   font-size: var(--sl-fs-xs);
 }
+.rpeField {
+  flex: 0 0 auto;
+  width: 3.75rem;
+}
+.rpeField input {
+  width: 100%;
+  min-height: var(--sl-tap-min);
+  text-align: center;
+  padding: var(--sl-space-2) 4px;
+  font-size: var(--sl-fs-sm);
+}
+.rpeField input::placeholder {
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  letter-spacing: 0.04em;
+}
 .setBtn,
 .setBtnDone {
   min-height: var(--sl-tap-min);
@@ -428,6 +444,96 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--sl-space-3);
+}
+
+/* --- Expedition log capture --- */
+.exped {
+  margin: var(--sl-space-5) 0;
+  padding: var(--sl-space-4);
+  background-color: var(--sl-surface);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-lg);
+}
+.expedTitle {
+  margin: 0;
+  color: var(--sl-cream);
+  font-family: var(--sl-font-display);
+  font-weight: var(--sl-fw-extrabold);
+  font-size: var(--sl-fs-lg);
+}
+.expedHint {
+  margin: var(--sl-space-2) 0 var(--sl-space-4);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+}
+.expedGroup {
+  margin-bottom: var(--sl-space-4);
+}
+.expedLabel {
+  display: block;
+  margin-bottom: var(--sl-space-2);
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.expedChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+}
+.expedChip,
+.expedChipOn {
+  min-height: 36px;
+  padding: var(--sl-space-2) var(--sl-space-3);
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid var(--sl-border);
+  background-color: var(--sl-surface-2);
+  color: var(--sl-fg-muted);
+  font-size: var(--sl-fs-sm);
+  cursor: pointer;
+}
+.expedChip:hover {
+  border-color: var(--sl-gold);
+  color: var(--sl-cream);
+}
+.expedChipOn {
+  border-color: var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.16);
+  color: var(--sl-gold);
+  font-weight: var(--sl-fw-semibold);
+}
+.expedText {
+  width: 100%;
+  resize: vertical;
+  padding: var(--sl-space-3);
+  font-family: var(--sl-font-body);
+  font-size: var(--sl-fs-sm);
+}
+.expedCount {
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+  font-size: var(--sl-fs-xs);
+  color: var(--sl-fg-faint);
+  font-variant-numeric: tabular-nums;
+}
+.expedActions {
+  display: flex;
+  gap: var(--sl-space-3);
+}
+.expedSaved {
+  margin: var(--sl-space-5) 0;
+  padding: var(--sl-space-3) var(--sl-space-4);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-gold);
+  background-color: rgba(212, 161, 90, 0.1);
+  color: var(--sl-cream);
+  font-size: var(--sl-fs-sm);
+}
+.expedSavedMark {
+  color: var(--sl-gold);
+  font-weight: var(--sl-fw-bold);
 }
 
 @media (max-width: 420px) {

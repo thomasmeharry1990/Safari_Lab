@@ -69,6 +69,7 @@ export function buildSessionLog(
 export interface SetInput {
   weight?: number;
   reps?: number;
+  rpe?: number;
   unit: WeightUnit;
 }
 
@@ -87,7 +88,14 @@ export function applySetLog(
   );
 
   const setLog: SetLog = existing
-    ? { ...existing, weight: input.weight, reps: input.reps, unit: input.unit, completedAt: new Date().toISOString() }
+    ? {
+        ...existing,
+        weight: input.weight,
+        reps: input.reps,
+        rpe: input.rpe,
+        unit: input.unit,
+        completedAt: new Date().toISOString(),
+      }
     : {
         id: crypto.randomUUID(),
         sessionLogId: session.id,
@@ -97,6 +105,7 @@ export function applySetLog(
         setNumber,
         reps: input.reps,
         weight: input.weight,
+        rpe: input.rpe,
         unit: input.unit,
         completedAt: new Date().toISOString(),
       };

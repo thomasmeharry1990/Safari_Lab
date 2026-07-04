@@ -57,6 +57,18 @@ describe('gym session engine', () => {
     expect(setsForBlock[0]!.weight).toBe(105);
   });
 
+  it('persists an optional RPE on the set and updates it in place', () => {
+    const program = activeProgram();
+    let log = buildSessionLog(program, 0);
+    const block = log.exerciseBlocks[0]!;
+    log = applySetLog(log, block.id, 1, { weight: 100, reps: 8, rpe: 8, unit: 'kg' });
+    expect(log.setLogs[0]!.rpe).toBe(8);
+    // Re-logging without an RPE clears it (matches the input state).
+    log = applySetLog(log, block.id, 1, { weight: 100, reps: 8, rpe: 9.5, unit: 'kg' });
+    const set = log.setLogs.find((s) => s.sessionExerciseBlockId === block.id)!;
+    expect(set.rpe).toBe(9.5);
+  });
+
   it('finalizes with a duration and completed status', () => {
     const program = activeProgram();
     let log = buildSessionLog(program, 0);

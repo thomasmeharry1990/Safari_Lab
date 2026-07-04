@@ -16,6 +16,8 @@ import {
 } from 'react';
 import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { SessionLog } from '@/lib/models/session';
+import type { ExpeditionLog, ExpeditionLogTag, ExpeditionMood } from '@/lib/models/expedition';
+import { EXPEDITION_FREE_TEXT_MAX } from '@/lib/models/expedition';
 import type { ActiveProgram, DraftProgram, DraftSession } from '@/lib/engine/types';
 import {
   applySetLog,
@@ -77,7 +79,7 @@ interface LocalDataValue {
   logSet: (
     blockId: string,
     setNumber: number,
-    input: { weight?: number; reps?: number; unit: WeightUnit }
+    input: { weight?: number; reps?: number; rpe?: number; unit: WeightUnit }
   ) => void;
   finishSession: () => { session: SessionLog; prs: PRResult[] } | null;
   abandonSession: () => void;
@@ -86,10 +88,14 @@ interface LocalDataValue {
   logQuickSet: (
     blockId: string,
     setNumber: number,
-    input: { weight?: number; reps?: number; unit: WeightUnit }
+    input: { weight?: number; reps?: number; rpe?: number; unit: WeightUnit }
   ) => void;
   finishQuickSession: () => { session: SessionLog; prs: PRResult[] } | null;
   abandonQuickSession: () => void;
+  attachExpeditionLog: (
+    sessionId: string,
+    data: { mood?: ExpeditionMood; tags: ExpeditionLogTag[]; freeText: string }
+  ) => void;
   exportSaveFile: () => SlFitSaveFile;
   importSaveFile: (file: SlFitSaveFile) => Promise<void>;
   clearAll: () => Promise<void>;
@@ -246,7 +252,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     (
       blockId: string,
       setNumber: number,
-      input: { weight?: number; reps?: number; unit: WeightUnit }
+      input: { weight?: number; reps?: number; rpe?: number; unit: WeightUnit }
     ) => {
       setActiveSession((prev) => {
         if (!prev) return prev;
@@ -306,7 +312,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     (
       blockId: string,
       setNumber: number,
-      input: { weight?: number; reps?: number; unit: WeightUnit }
+      input: { weight?: number; reps?: number; rpe?: number; unit: WeightUnit }
     ) => {
       setActiveQuickSession((prev) => {
         if (!prev) return prev;
@@ -336,6 +342,35 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     void clearActiveQuickSession();
     setActiveQuickSession(null);
   }, []);
+
+  const attachExpeditionLog = useCallback(
+    (
+      sessionId: string,
+      data: { mood?: ExpeditionMood; tags: ExpeditionLogTag[]; freeText: string }
+    ) => {
+      setSessionHistory((prev) => {
+        const target = prev.find((s) => s.id === sessionId);
+        if (!target) return prev;
+        const log: ExpeditionLog = {
+          id: crypto.randomUUID(),
+          sessionLogId: sessionId,
+          createdAt: new Date().toISOString(),
+          mood: data.mood,
+          tags: data.tags,
+          freeText: data.freeText.slice(0, EXPEDITION_FREE_TEXT_MAX),
+          maxLength: 500,
+        };
+        const updated: SessionLog = {
+          ...target,
+          expeditionLog: log,
+          expeditionLogId: log.id,
+        };
+        void addSessionToHistory(updated);
+        return prev.map((s) => (s.id === sessionId ? updated : s));
+      });
+    },
+    []
+  );
 
   const exportSaveFile = useCallback((): SlFitSaveFile => {
     return {
@@ -418,6 +453,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logQuickSet,
       finishQuickSession,
       abandonQuickSession,
+      attachExpeditionLog,
       exportSaveFile,
       importSaveFile,
       clearAll,
@@ -450,6 +486,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       logQuickSet,
       finishQuickSession,
       abandonQuickSession,
+      attachExpeditionLog,
       exportSaveFile,
       importSaveFile,
       clearAll,
