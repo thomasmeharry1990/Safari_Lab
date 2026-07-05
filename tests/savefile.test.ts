@@ -74,4 +74,17 @@ describe('save file validation', () => {
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.file.completedPrograms).toHaveLength(1);
   });
+
+  it('defaults bodyEntries to [] for files without the field, preserves when present', () => {
+    const legacy = validateSaveFile(validRaw);
+    expect(legacy.ok).toBe(true);
+    if (legacy.ok) expect(legacy.file.bodyEntries).toEqual([]);
+
+    const withBody = validateSaveFile({
+      ...validRaw,
+      bodyEntries: [{ id: 'b1', date: '2026-01-01', weightUnit: 'kg', lengthUnit: 'cm' }],
+    });
+    expect(withBody.ok).toBe(true);
+    if (withBody.ok) expect(withBody.file.bodyEntries).toHaveLength(1);
+  });
 });

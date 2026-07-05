@@ -20,6 +20,7 @@ import type { SessionLog } from '@/lib/models/session';
 import type { ExpeditionLog, ExpeditionLogTag, ExpeditionMood } from '@/lib/models/expedition';
 import { EXPEDITION_FREE_TEXT_MAX } from '@/lib/models/expedition';
 import type { CompletedProgram } from '@/lib/models/completed-program';
+import type { BodyEntry } from '@/lib/models/body';
 import type { ActiveProgram, DraftProgram, DraftSession } from '@/lib/engine/types';
 import {
   applySetLog,
@@ -54,14 +55,18 @@ import {
   getOverrides,
   getSessionHistory,
   getSettings,
+  getBodyEntries,
   addCompletedProgram,
   putOverride,
   replaceCompletedPrograms,
   replaceHistory,
   replaceOverrides,
+  replaceBodyEntries,
   saveActiveProgram,
   saveActiveSession,
   saveSettings,
+  saveBodyEntry as repoSaveBodyEntry,
+  deleteBodyEntry as repoDeleteBodyEntry,
   type AppMeta,
 } from '@/lib/db/repo';
 import type { SlFitSaveFile } from '@/lib/db/savefile';
@@ -75,6 +80,7 @@ interface LocalDataValue {
   activeSession: SessionLog | null;
   sessionHistory: SessionLog[];
   completedPrograms: CompletedProgram[];
+  bodyEntries: BodyEntry[];
   blockedIds: string[];
   favouriteIds: string[];
   /** True while Safari Lab is also open in another browser tab. */
@@ -117,6 +123,9 @@ interface LocalDataValue {
     sessionId: string,
     data: { mood?: ExpeditionMood; tags: ExpeditionLogTag[]; freeText: string }
   ) => void;
+  /** Insert or update a body-tracking entry (upsert by id). */
+  saveBodyEntry: (entry: BodyEntry) => void;
+  deleteBodyEntry: (id: string) => void;
   exportSaveFile: () => SlFitSaveFile;
   importSaveFile: (file: SlFitSaveFile) => Promise<void>;
   clearAll: () => Promise<void>;
@@ -138,6 +147,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const [activeQuickSession, setActiveQuickSession] = useState<SessionLog | null>(null);
   const [sessionHistory, setSessionHistory] = useState<SessionLog[]>([]);
   const [completedPrograms, setCompletedPrograms] = useState<CompletedProgram[]>([]);
+  const [bodyEntries, setBodyEntries] = useState<BodyEntry[]>([]);
 
   /**
    * Read every store into state. Used on mount and again whenever another tab
@@ -147,7 +157,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   const remoteApplyRef = useRef(false);
   const hydrateAll = useCallback(async (markHydrated: boolean, remote = false) => {
     try {
-      const [s, o, m, p, sess, hist, quick, completed] = await Promise.all([
+      const [s, o, m, p, sess, hist, quick, completed, body] = await Promise.all([
         getSettings(),
         getOverrides(),
         getAppMeta(),
@@ -156,6 +166,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
         getSessionHistory(),
         getActiveQuickSession(),
         getCompletedPrograms(),
+        getBodyEntries(),
       ]);
       if (remote) remoteApplyRef.current = true;
       setSettings(s);
@@ -166,6 +177,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       setSessionHistory(hist);
       setActiveQuickSession(quick);
       setCompletedPrograms(completed);
+      setBodyEntries(body);
     } catch {
       // IndexedDB unavailable (private mode, blocked) - stay on defaults.
     } finally {
@@ -202,6 +214,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     activeQuickSession,
     sessionHistory,
     completedPrograms,
+    bodyEntries,
     broadcastMutation,
   ]);
 
@@ -484,6 +497,21 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const saveBodyEntry = useCallback((entry: BodyEntry) => {
+    void repoSaveBodyEntry(entry);
+    setBodyEntries((prev) => {
+      const exists = prev.some((e) => e.id === entry.id);
+      return exists
+        ? prev.map((e) => (e.id === entry.id ? entry : e))
+        : [...prev, entry];
+    });
+  }, []);
+
+  const deleteBodyEntry = useCallback((id: string) => {
+    void repoDeleteBodyEntry(id);
+    setBodyEntries((prev) => prev.filter((e) => e.id !== id));
+  }, []);
+
   const exportSaveFile = useCallback((): SlFitSaveFile => {
     return {
       app: 'SafariLab',
@@ -497,6 +525,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeSession,
       sessionHistory,
       completedPrograms,
+      bodyEntries,
       migrationHistory: [],
     };
   }, [
@@ -507,6 +536,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     activeSession,
     sessionHistory,
     completedPrograms,
+    bodyEntries,
   ]);
 
   const importSaveFile = useCallback(async (file: SlFitSaveFile) => {
@@ -514,6 +544,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     await replaceOverrides(file.exerciseOverrides);
     await replaceHistory(file.sessionHistory);
     await replaceCompletedPrograms(file.completedPrograms ?? []);
+    await replaceBodyEntries(file.bodyEntries ?? []);
     if (file.activeProgram) await saveActiveProgram(file.activeProgram);
     else await clearActiveProgram();
     if (file.activeSession) await saveActiveSession(file.activeSession);
@@ -523,6 +554,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setOverrides(file.exerciseOverrides);
     setSessionHistory(file.sessionHistory);
     setCompletedPrograms(file.completedPrograms ?? []);
+    setBodyEntries(file.bodyEntries ?? []);
     setActiveProgram(file.activeProgram);
     setActiveSession(file.activeSession);
   }, []);
@@ -536,6 +568,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     setActiveQuickSession(null);
     setSessionHistory([]);
     setCompletedPrograms([]);
+    setBodyEntries([]);
     setAppMeta(await getAppMeta());
   }, []);
 
@@ -558,6 +591,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeSession,
       sessionHistory,
       completedPrograms,
+      bodyEntries,
       blockedIds,
       favouriteIds,
       otherTabsOpen,
@@ -582,6 +616,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       finishQuickSession,
       abandonQuickSession,
       attachExpeditionLog,
+      saveBodyEntry,
+      deleteBodyEntry,
       exportSaveFile,
       importSaveFile,
       clearAll,
@@ -596,6 +632,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       activeQuickSession,
       sessionHistory,
       completedPrograms,
+      bodyEntries,
       blockedIds,
       favouriteIds,
       otherTabsOpen,
@@ -619,6 +656,8 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       finishQuickSession,
       abandonQuickSession,
       attachExpeditionLog,
+      saveBodyEntry,
+      deleteBodyEntry,
       exportSaveFile,
       importSaveFile,
       clearAll,

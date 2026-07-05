@@ -19,6 +19,7 @@ export const NOINDEX_PREFIXES = [
   '/program',
   '/today',
   '/progress',
+  '/body',
   '/settings',
   '/backup',
   '/offline',

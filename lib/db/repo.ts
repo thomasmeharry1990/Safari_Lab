@@ -7,6 +7,7 @@ import type { ExerciseOverride, UserSettings } from '@/lib/models/save-file';
 import type { ActiveProgram } from '@/lib/engine/types';
 import type { SessionLog } from '@/lib/models/session';
 import type { CompletedProgram } from '@/lib/models/completed-program';
+import type { BodyEntry } from '@/lib/models/body';
 import {
   idbClearAll,
   idbClearStore,
@@ -180,6 +181,27 @@ export async function saveActiveQuickSession(session: SessionLog): Promise<void>
 
 export async function clearActiveQuickSession(): Promise<void> {
   await idbDelete(DB_STORES.quickSafaris, 'active-quick');
+}
+
+// --- Body entries (collection: dated bodyweight + measurements) ---
+
+export async function getBodyEntries(): Promise<BodyEntry[]> {
+  if (!isBrowserDbAvailable()) return [];
+  return idbGetAll<BodyEntry>(DB_STORES.bodyEntries);
+}
+
+export async function saveBodyEntry(entry: BodyEntry): Promise<void> {
+  await idbPut(DB_STORES.bodyEntries, entry);
+}
+
+export async function deleteBodyEntry(id: string): Promise<void> {
+  await idbDelete(DB_STORES.bodyEntries, id);
+}
+
+/** Replace the whole body-entries store (used on import). */
+export async function replaceBodyEntries(list: BodyEntry[]): Promise<void> {
+  await idbClearStore(DB_STORES.bodyEntries);
+  await Promise.all(list.map((e) => idbPut(DB_STORES.bodyEntries, e)));
 }
 
 /** Wipe all local data (settings, overrides, programs, sessions, everything). */

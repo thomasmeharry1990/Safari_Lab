@@ -15,6 +15,7 @@ import type {
 import type { SessionLog } from '@/lib/models/session';
 import type { ActiveProgram } from '@/lib/engine/types';
 import type { CompletedProgram } from '@/lib/models/completed-program';
+import type { BodyEntry } from '@/lib/models/body';
 
 export interface SlFitSaveFile {
   app: 'SafariLab';
@@ -29,6 +30,8 @@ export interface SlFitSaveFile {
   sessionHistory: SessionLog[];
   /** Retired program block reports. Optional for backward compatibility. */
   completedPrograms: CompletedProgram[];
+  /** Dated bodyweight + measurement snapshots. Optional for back-compat. */
+  bodyEntries: BodyEntry[];
   migrationHistory: MigrationHistoryEntry[];
 }
 
@@ -80,6 +83,9 @@ export function validateSaveFile(raw: unknown): ValidationResult {
       : [],
     completedPrograms: Array.isArray(obj.completedPrograms)
       ? (obj.completedPrograms as CompletedProgram[])
+      : [],
+    bodyEntries: Array.isArray(obj.bodyEntries)
+      ? (obj.bodyEntries as BodyEntry[])
       : [],
     migrationHistory: Array.isArray(obj.migrationHistory)
       ? (obj.migrationHistory as MigrationHistoryEntry[])

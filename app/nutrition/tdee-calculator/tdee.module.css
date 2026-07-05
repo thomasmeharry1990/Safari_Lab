@@ -36,3 +36,17 @@
   font-size: var(--sl-fs-xs);
   color: var(--sl-fg-muted);
 }
+.useLogged {
+  align-self: flex-start;
+  margin: calc(-1 * var(--sl-space-2)) 0 var(--sl-space-2);
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--sl-muted-gold);
+  font-size: var(--sl-fs-sm);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.useLogged:hover {
+  color: var(--sl-gold);
+}

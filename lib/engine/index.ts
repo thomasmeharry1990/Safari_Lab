@@ -52,3 +52,12 @@ export {
   type PRRow,
   type StrengthOption,
 } from './progress';
+export {
+  sortBodyEntries,
+  weightSeries,
+  measurementSeries,
+  loggedMeasurementKeys,
+  weightSummary,
+  latestWeight,
+  type WeightSummary,
+} from './body';

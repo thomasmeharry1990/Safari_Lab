@@ -17,15 +17,25 @@ import {
   SegField,
   SelectField,
 } from '@/components/calc/fields';
+import { useLocalData } from '@/lib/state/LocalDataProvider';
+import { latestWeight } from '@/lib/engine';
 import styles from './tdee.module.css';
 
 export function TdeeTool() {
+  const { bodyEntries } = useLocalData();
   const [sex, setSex] = useState<Sex>('male');
   const [units, setUnits] = useState<'metric' | 'imperial'>('metric');
   const [age, setAge] = useState('30');
   const [weight, setWeight] = useState('80');
   const [height, setHeight] = useState('178');
   const [activity, setActivity] = useState<ActivityLevel>('moderate');
+
+  const logged = latestWeight(bodyEntries);
+  function useLoggedWeight() {
+    if (!logged) return;
+    setUnits(logged.unit === 'lb' ? 'imperial' : 'metric');
+    setWeight(String(logged.weight));
+  }
 
   const weightKg = units === 'metric' ? Number(weight) : lbToKg(Number(weight));
   const heightCm = units === 'metric' ? Number(height) : inToCm(Number(height));
@@ -49,6 +59,12 @@ export function TdeeTool() {
       />
       <NumberField label="Age" value={age} onChange={setAge} suffix="years" min={0} />
       <NumberField label="Weight" value={weight} onChange={setWeight} suffix={units === 'metric' ? 'kg' : 'lb'} min={0} />
+      {logged ? (
+        <button type="button" className={styles.useLogged} onClick={useLoggedWeight}>
+          Use my logged weight ({logged.weight}
+          {logged.unit})
+        </button>
+      ) : null}
       <NumberField label="Height" value={height} onChange={setHeight} suffix={units === 'metric' ? 'cm' : 'in'} min={0} />
       <SelectField
         label="Activity level"

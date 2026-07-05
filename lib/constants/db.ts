@@ -19,8 +19,9 @@ export const SLFIT_EXTENSION = '.slfit' as const;
 
 export const DB_NAME = 'safari-lab-local' as const;
 
-/** Integer for IndexedDB store upgrades ONLY. Never a semver. */
-export const DB_VERSION = 4 as const;
+/** Integer for IndexedDB store upgrades ONLY. Never a semver.
+ *  v5: added the `bodyEntries` store (Body Tracking feature). */
+export const DB_VERSION = 5 as const;
 
 /**
  * IndexedDB object stores (v1.4 Section 8.1). Swap events are embedded inside
@@ -38,6 +39,7 @@ export const DB_STORES = {
   quickSafaris: 'quickSafaris', // one-off sessions and conversion metadata
   progressSnapshots: 'progressSnapshots', // calculated local progress snapshots
   exerciseOverrides: 'exerciseOverrides', // favourites, blocked exercises, notes
+  bodyEntries: 'bodyEntries', // dated bodyweight + tape measurements
   audit: 'audit', // import/export/migration/adaptation audit trail
 } as const;
 
