@@ -26,6 +26,11 @@ const TOOLS = [
     title: 'Protein Target',
     desc: 'A daily protein range to build and keep muscle, from your body weight.',
   },
+  {
+    href: '/nutrition/body-fat',
+    title: 'Body-Fat & FFMI',
+    desc: 'Estimate body-fat % (US Navy method), lean mass and FFMI from your measurements.',
+  },
 ];
 
 export default function NutritionHub() {

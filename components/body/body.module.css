@@ -282,3 +282,8 @@
   gap: var(--sl-space-4);
   padding: var(--sl-space-5);
 }
+.tieActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sl-space-2);
+}

@@ -59,5 +59,16 @@ export {
   loggedMeasurementKeys,
   weightSummary,
   latestWeight,
+  latestMeasurements,
   type WeightSummary,
 } from './body';
+export {
+  computeConsistency,
+  type ConsistencyStats,
+  type CalendarDay,
+} from './consistency';
+export {
+  computeAchievements,
+  type Achievement,
+  type AchievementInput,
+} from './achievements';

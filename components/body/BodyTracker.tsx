@@ -412,15 +412,20 @@ export function BodyTracker() {
         <Section tight>
           <Card className={styles.tie}>
             <div>
-              <h3 className={styles.h3}>Turn your weight into numbers</h3>
+              <h3 className={styles.h3}>Turn your numbers into insight</h3>
               <p className={styles.muted}>
-                Your latest weight feeds straight into the calorie and macro
+                Your latest weight and measurements feed straight into the
                 calculators — one tap prefills them.
               </p>
             </div>
-            <LinkButton href="/nutrition/tdee-calculator" variant="secondary">
-              Open TDEE calculator
-            </LinkButton>
+            <div className={styles.tieActions}>
+              <LinkButton href="/nutrition/body-fat" variant="secondary">
+                Body-fat &amp; FFMI
+              </LinkButton>
+              <LinkButton href="/nutrition/tdee-calculator" variant="ghost">
+                TDEE calculator
+              </LinkButton>
+            </div>
           </Card>
         </Section>
       </Shell>

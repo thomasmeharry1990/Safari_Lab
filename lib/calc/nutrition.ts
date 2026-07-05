@@ -49,3 +49,5 @@ export function macroSplit(
 
 export const lbToKg = (lb: number) => lb * 0.453592;
 export const inToCm = (inches: number) => inches * 2.54;
+export const kgToLb = (kg: number) => kg / 0.453592;
+export const cmToIn = (cm: number) => cm / 2.54;

@@ -3,7 +3,11 @@
  * Pure, derived from local BodyEntry records. No Date/random - callers pass
  * timestamps. All computation is local; nothing leaves the browser.
  */
-import type { BodyEntry, BodyMeasurementKey } from '@/lib/models/body';
+import type {
+  BodyEntry,
+  BodyLengthUnit,
+  BodyMeasurementKey,
+} from '@/lib/models/body';
 import type { SeriesPoint } from './progress';
 
 function shortDate(iso: string): string {
@@ -83,6 +87,29 @@ export function latestWeight(
   const withWeight = sortBodyEntries(entries).filter((e) => e.weight != null);
   const last = withWeight[withWeight.length - 1];
   return last?.weight != null ? { weight: last.weight, unit: last.weightUnit } : undefined;
+}
+
+/**
+ * The most recent recorded value for each measurement key (scanning newest
+ * first, per key), plus the length unit of the newest entry that had any
+ * measurement. Used to prefill the body-composition calculator.
+ */
+export function latestMeasurements(entries: BodyEntry[]): {
+  values: Partial<Record<BodyMeasurementKey, number>>;
+  unit?: BodyLengthUnit;
+} {
+  const newestFirst = sortBodyEntries(entries).reverse();
+  const values: Partial<Record<BodyMeasurementKey, number>> = {};
+  let unit: BodyLengthUnit | undefined;
+  for (const entry of newestFirst) {
+    if (!entry.measurements) continue;
+    if (!unit) unit = entry.lengthUnit;
+    for (const [key, value] of Object.entries(entry.measurements)) {
+      const k = key as BodyMeasurementKey;
+      if (values[k] == null && value != null) values[k] = value;
+    }
+  }
+  return { values, unit };
 }
 
 function round1(n: number): number {
